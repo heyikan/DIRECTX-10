@@ -34,7 +34,7 @@ class dxManager
 	HRESULT InitDevice(HWND* hW);
 	HRESULT createSwapChainAndDevice();
 	HRESULT createRenderTargetView();
-
+	HRESULT createViewPort();
 
 	void Render();
 
@@ -57,13 +57,11 @@ class dxManager
 		// WinApi Classes
 		HWND*                       g_hWnd;
 
-
-
-		D3D10_DRIVER_TYPE			g_driverType;
-
 		ID3D10Device*               g_pd3dDevice;
 		IDXGISwapChain*				g_pSwapChain;
 		ID3D10RenderTargetView*		g_pRenderTargetView;
+
+		D3D10_DRIVER_TYPE			g_driverType;
 
 
 };

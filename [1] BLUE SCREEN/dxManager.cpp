@@ -63,6 +63,10 @@ HRESULT dxManager::InitDevice(HWND* hW)
 	if (FAILED(createRenderTargetView()))
 		return false;
 
+	// Create viewport
+	if (FAILED(createViewPort()))
+		return false;
+
 
 	return S_OK;
 
@@ -94,7 +98,6 @@ HRESULT dxManager::createSwapChainAndDevice()
 	//--------------------------------------------------------------
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd , sizeof(sd));
-	//g_pSwapChain->GetDesc(&sd);
 
 	// Set the width and height of the buffers in the swap chain
 	sd.BufferDesc.Width = windowWidth;
@@ -139,9 +142,6 @@ HRESULT dxManager::createSwapChainAndDevice()
 	}
 	if (FAILED(hr))
 		fatalError(L"D3D device creation failed!");
-
-
-
 	/*
 	The D3D10CreateDeviceAndSwapChain function will fill the pSwapChain variable
 	with a valid IDXGISwapChain object and the pD3DDevice variable with a valid
@@ -169,6 +169,21 @@ HRESULT dxManager::createRenderTargetView()
 
 	return S_OK;
 
+}
+
+HRESULT dxManager::createViewPort()
+{
+	// Setup the viewport
+	D3D10_VIEWPORT vp;
+	vp.Width = windowWidth;
+	vp.Height = windowHeight;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	g_pd3dDevice->RSSetViewports(1 , &vp);
+
+	return S_OK;
 }
 
 /*******************************************************************
