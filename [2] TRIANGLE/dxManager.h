@@ -1,12 +1,15 @@
-
-#ifndef DXMANAGER
-#define DXMANAGER
+#ifndef _DXMANAGER
+#define _DXMANAGER
 
 #include <windows.h>
 #include <d3d10.h>
 #include <d3dx10.h>
 
+#include "BtnCtrl.h"
+
 #include <vector>
+
+
 
 #pragma comment (lib, "d3d10.lib")
 //#pragma comment (lib, "d3d10d.lib")
@@ -24,7 +27,7 @@ struct Vertex
 	}
 };
 
-class dxManager
+class dxManager:public BtnCtrl
 {
 
 	public:

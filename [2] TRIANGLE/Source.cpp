@@ -4,6 +4,7 @@
 
 #include "dxManager.h"
 #include "Window.h"
+
 #pragma comment (lib, "d3d10.lib")
 
 /*******************************************************************
@@ -15,7 +16,6 @@ HWND hWnd;					//window handle
 // class declarations
 dxManager dx;
 Window wnd;
-
 
 /*******************************************************************
 * WinMain
@@ -46,8 +46,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 		dx.Render();
 	}
-
-	dx.cleanUpDevice();
 
 	return (int)msg.wParam;
 

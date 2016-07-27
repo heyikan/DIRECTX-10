@@ -1,6 +1,5 @@
 #include "Window.h"
 
-
 Window::Window()
 {
 	w_Hinstance = NULL;
@@ -18,27 +17,31 @@ Window::~Window()
 //--------------------------------------------------------------------------------------
 // Called every time the application receives a message
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK  Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	PAINTSTRUCT ps;
-	HDC hdc;
-
 	switch (message)
 	{
-	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		EndPaint(hWnd, &ps);
-		break;
+				// Allow the user to press the escape key to end the application
+			case WM_KEYDOWN:	
+				switch (wParam)
+			{
+				// Check if the user hit the escape key
+				case VK_ESCAPE: PostQuitMessage(0);
+				break;
 
-	case WM_DESTROY:
+
+			}
+
+			break;
+
+
+	// The user hit the close button, close the application
+	case WM_DESTROY:	
 		PostQuitMessage(0);
 		break;
-
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	return 0;
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 // Setters & Getters
@@ -80,7 +83,7 @@ HRESULT Window::InitWindow(HINSTANCE hInstance, int nCmdShow , HWND& hWnd)
 	w_Hinstance= hInstance;
 	RECT rc = { 0, 0, windowWidth, windowHeight };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-	hWnd = CreateWindow(L"BlueScreen", L"DIRECTX 10 - BLUESCREEN", WS_OVERLAPPEDWINDOW,
+	hWnd = CreateWindow(L"BlueScreen", L"DIRECTX 10 - TRIANGLE", WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
 		NULL);
 	if (!hWnd)
@@ -88,7 +91,7 @@ HRESULT Window::InitWindow(HINSTANCE hInstance, int nCmdShow , HWND& hWnd)
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
-
+	
 	return S_OK;
 }
 

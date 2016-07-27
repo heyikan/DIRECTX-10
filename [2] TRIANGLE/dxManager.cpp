@@ -1,6 +1,9 @@
 #include "dxManager.h"
 #include <string>
 
+
+
+
 /*******************************************************************
 * Constructor
 *******************************************************************/
@@ -53,6 +56,25 @@ void dxManager::cleanUpDevice()
 
 void dxManager::Render()
 {
+	if (GetAsyncKeyState('X') & 0x8000) { 
+		increaseX();
+	
+		//wchar_t  str[256];
+		//wsprintf(str, L"It works! - number: %d \n", getZ() );
+		//OutputDebugString(str);
+
+		setMatrices();
+	}
+
+	if (GetAsyncKeyState('Y') & 0x8000) {
+		increaseY();
+		setMatrices();
+	}
+	if (GetAsyncKeyState('Z') & 0x8000) {
+		increaseZ();
+		setMatrices();
+	}
+
 	// Just clear the backbuffer
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
 	g_pd3dDevice->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
@@ -329,7 +351,7 @@ HRESULT dxManager::setTriangleVertices()
 	// Creating the buffer
 	hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pVertexBuffer);
 	if (FAILED(hr))
-		fatalError(L"Creta Buffer Error");
+		fatalError(L"Create Buffer Error");
 
 	// set buffer the vertex buffer for triangle
 	UINT stride = sizeof(Vertex);
@@ -345,11 +367,11 @@ HRESULT dxManager::setMatrices()
 {
 	// Initialize the world matrix
 	
-	
 	D3DXMatrixIdentity(&g_pWorld);
 
 	// Initialize the view matrix
-	D3DXVECTOR3 Eye(0.0f, 3.0f, -8.0f);
+	//D3DXVECTOR3 Eye(0.0f, 3.0f, -10.0f);
+	D3DXVECTOR3 Eye(getX(), getY(), getZ());
 	D3DXVECTOR3 At(0.0f, 0.0f, 1.0f);
 	D3DXVECTOR3 Up(0.0f, 1.0f, 0.0f);
 	
