@@ -324,6 +324,7 @@ HRESULT dxManager::createAndSetInputLayout()
 	D3D10_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D10_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	// calculating number of elements
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
@@ -412,14 +413,14 @@ HRESULT dxManager::setVertexBuffers()
 	// [1]: Init vertices
 	Vertex vertices[] =
 	{
-		{ D3DXVECTOR3(-1.0f, 1.0f, -1.0f) },
-		{ D3DXVECTOR3(1.0f, 1.0f, -1.0f) },
-		{ D3DXVECTOR3(1.0f, 1.0f, 1.0f) },
-		{ D3DXVECTOR3(-1.0f, 1.0f, 1.0f) },
-		{ D3DXVECTOR3(-1.0f, -1.0f, -1.0f) },
-		{ D3DXVECTOR3(1.0f, -1.0f, -1.0f) },
-		{ D3DXVECTOR3(1.0f, -1.0f, 1.0f) },
-		{ D3DXVECTOR3(-1.0f, -1.0f, 1.0f) },
+		{ D3DXVECTOR3(-1.0f, 1.0f, -1.0f), D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f) },
+		{ D3DXVECTOR3(1.0f, 1.0f, -1.0f), D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f) },
+		{ D3DXVECTOR3(1.0f, 1.0f, 1.0f), D3DXVECTOR4(0.0f, 1.0f, 1.0f, 1.0f) },
+		{ D3DXVECTOR3(-1.0f, 1.0f, 1.0f), D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f) },
+		{ D3DXVECTOR3(-1.0f, -1.0f, -1.0f), D3DXVECTOR4(1.0f, 0.0f, 1.0f, 1.0f) },
+		{ D3DXVECTOR3(1.0f, -1.0f, -1.0f), D3DXVECTOR4(1.0f, 1.0f, 0.0f, 1.0f) },
+		{ D3DXVECTOR3(1.0f, -1.0f, 1.0f), D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f) },
+		{ D3DXVECTOR3(-1.0f, -1.0f, 1.0f), D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f) },
 	};
 
 	// [2] Create Buffer Desc
