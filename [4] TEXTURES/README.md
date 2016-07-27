@@ -52,3 +52,12 @@ struct vertex
     D3DXVECTOR2 texCoord;
 }
 ```
+
+We use a 2d vector to specify the u,v coordinates for each vertex. So this also means the code for the qaud has changed to:
+
+```c
+v[0] = vertex( D3DXVECTOR3(-1,-1,0),D3DXVECTOR4(1,0,0,1),D3DXVECTOR2(0.0f, 1.0f) );
+.
+.
+
+```
