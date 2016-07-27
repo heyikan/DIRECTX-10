@@ -27,7 +27,8 @@ dxManager::dxManager()
 
 	g_pVertexBuffer = NULL;
 
-	
+	g_pDepthStencil = NULL;
+	g_pDepthStencilView = NULL;
 
 	// Seting up window width and height.
 	windowWidth = 800;
@@ -45,35 +46,46 @@ dxManager::~dxManager()
 
 void dxManager::cleanUpDevice()
 {
-	if (g_pd3dDevice) g_pd3dDevice->ClearState();
-	if (g_pSwapChain) g_pSwapChain->Release();
-	if (g_pRenderTargetView) g_pRenderTargetView->Release();
-	if (g_pd3dDevice) g_pd3dDevice->Release();
-	if (g_pEffect) g_pEffect->Release();
-	if (g_pVertexLayout) g_pVertexLayout->Release();
+	//if (g_pd3dDevice) g_pd3dDevice->ClearState();
+	//if (g_pSwapChain) g_pSwapChain->Release();
+	//if (g_pRenderTargetView) g_pRenderTargetView->Release();
+	//if (g_pd3dDevice) g_pd3dDevice->Release();
+	//if (g_pEffect) g_pEffect->Release();
+	//if (g_pVertexLayout) g_pVertexLayout->Release();
+	//if (g_pVertexBuffer) g_pVertexBuffer->Release();
+
 	if (g_pVertexBuffer) g_pVertexBuffer->Release();
+	if (g_pIndexBuffer) g_pIndexBuffer->Release();
+	if (g_pVertexLayout) g_pVertexLayout->Release();
+	//if (g_pEffect) g_pEffect->Release();
+	if (g_pRenderTargetView) g_pRenderTargetView->Release();
+	if (g_pDepthStencil) g_pDepthStencil->Release();
+	//if (g_pDepthStencilView) g_pDepthStencilView->Release();
+	if (g_pSwapChain) g_pSwapChain->Release();
+	if (g_pd3dDevice) g_pd3dDevice->Release();
 }
 
 void dxManager::Render()
 {
-	//if (GetAsyncKeyState('X') & 0x8000) { 
-	//	increaseX();
-	//
-	//	//wchar_t  str[256];
-	//	//wsprintf(str, L"It works! - number: %d \n", getZ() );
-	//	//OutputDebugString(str);
+	if (GetAsyncKeyState('X') & 0x8000) { 
+		increaseX();
+	
+		//wchar_t  str[256];
+		//wsprintf(str, L"It works! - number: %d \n", getZ() );
+		//OutputDebugString(str);
 
-	//	setMatrices();
-	//}
+		setMatrices();
 
-	//if (GetAsyncKeyState('Y') & 0x8000) {
-	//	increaseY();
-	//	setMatrices();
-	//}
-	//if (GetAsyncKeyState('Z') & 0x8000) {
-	//	increaseZ();
-	//	setMatrices();
-	//}
+	}
+
+	if (GetAsyncKeyState('Y') & 0x8000) {
+		increaseY();
+		setMatrices();
+	}
+	if (GetAsyncKeyState('Z') & 0x8000) {
+		increaseZ();
+		setMatrices();
+	}
 
 
 	// Update our time
@@ -88,17 +100,24 @@ void dxManager::Render()
 		DWORD dwTimeCur = GetTickCount();
 		if (dwTimeStart == 0)
 			dwTimeStart = dwTimeCur;
-		t = (dwTimeCur - dwTimeStart) / 100.0f;
+		t = (dwTimeCur - dwTimeStart) / 1000.0f;
 	}
-
-	//
-	// Animate the cube
-	//
-	D3DXMatrixRotationY(&g_pWorld, t);
 
 	// Just clear the backbuffer
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
 	g_pd3dDevice->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
+	
+	//
+	// Clear the depth buffer to 1.0 (max depth)
+	//
+	g_pd3dDevice->ClearDepthStencilView(g_pDepthStencilView, D3D10_CLEAR_DEPTH, 1.0f, 0);
+
+	//
+	// Animate the cube
+	//
+	//D3DXMatrixRotationY(&g_pWorld, t);
+
+
 
 	// Update Variables
 	g_pWorldVariable->SetMatrix((float*) &g_pWorld);
@@ -121,18 +140,8 @@ void dxManager::Render()
 
 HRESULT dxManager::InitDevice(HWND* hW)
 {
-	HRESULT hr = S_OK;
 	// window handle
 	g_hWnd = hW;
-
-	// Creating a rectangle structure to determine window's dimension.
-	RECT rc;
-	// GetClientRect : Retrieves the coordinates of a window's client area. 
-	// The client coordinates specify the upper-left and lower-right corners of the client area. 
-	GetClientRect(*g_hWnd, &rc);
-	UINT width = rc.right - rc.left;
-	UINT height = rc.bottom - rc.top;
-	// Now windows dimensions determined...
 
 
 	// Creating a Swap Chain. And Fills the id3d10Device
@@ -179,7 +188,15 @@ HRESULT dxManager::InitDevice(HWND* hW)
 HRESULT dxManager::createSwapChainAndDevice()
 {
 
-	HRESULT hr;
+
+	// Creating a rectangle structure to determine window's dimension.
+	RECT rc;
+	// GetClientRect : Retrieves the coordinates of a window's client area. 
+	// The client coordinates specify the upper-left and lower-right corners of the client area. 
+	GetClientRect(*g_hWnd, &rc);
+	UINT width = rc.right - rc.left;
+	UINT height = rc.bottom - rc.top;
+	// Now windows dimensions determined...
 
 	UINT createDeviceFlags = 0;
 #ifdef _DEBUG
@@ -200,8 +217,8 @@ HRESULT dxManager::createSwapChainAndDevice()
 	ZeroMemory(&sd , sizeof(sd));
 
 	// Set the width and height of the buffers in the swap chain
-	sd.BufferDesc.Width = windowWidth;
-	sd.BufferDesc.Height = windowHeight;
+	sd.BufferDesc.Width = width;
+	sd.BufferDesc.Height = height;
 
 	// Set the refresh rate. This is how often the buffers get swapped out
 	sd.BufferDesc.RefreshRate.Numerator = 60;
@@ -211,7 +228,7 @@ HRESULT dxManager::createSwapChainAndDevice()
 	sd.BufferCount = 1;
 
 	// Set the surface format of the buffers
-	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;;
 
 	// Set how the buffers are used. Since you are drawing to the buffers, they are considered a render target
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -226,6 +243,11 @@ HRESULT dxManager::createSwapChainAndDevice()
 	// Set whether you are running in a window or fullscreen mode
 	sd.Windowed = TRUE;
 
+	IDXGIFactory* pFactory = NULL;
+	IDXGIAdapter* pAdapter = NULL;
+	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&pFactory);
+
+	pFactory->EnumAdapters(0, &pAdapter);
 	//Create the D3D device
 	/* The
 	Direct3D device, an object with the type ID3D10Device, is your main point of
@@ -235,7 +257,7 @@ HRESULT dxManager::createSwapChainAndDevice()
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
 	{
 		g_driverType = driverTypes[driverTypeIndex];
-		hr = D3D10CreateDeviceAndSwapChain(NULL, g_driverType, NULL, createDeviceFlags,
+		hr = D3D10CreateDeviceAndSwapChain(pAdapter, D3D10_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags,
 			D3D10_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice);
 		if (FAILED(hr))
 			fatalError(L"D3D10CreateDeviceAndSwapChain Error!");
@@ -254,7 +276,7 @@ HRESULT dxManager::createSwapChainAndDevice()
 
 HRESULT dxManager::createRenderTargetView()
 {
-	HRESULT hr;
+
 	ID3D10Texture2D*	pBackBuffer;
 	hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&pBackBuffer);
 	if (FAILED(hr))
@@ -264,6 +286,35 @@ HRESULT dxManager::createRenderTargetView()
 	pBackBuffer->Release();
 	if (FAILED(hr))
 		fatalError(L"createRenderTargetView Error!");
+
+
+	// create depth stencil texture
+	D3D10_TEXTURE2D_DESC descDepth;
+	descDepth.Width = windowWidth;
+	descDepth.Height = windowHeight;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D10_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D10_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+
+	hr = g_pd3dDevice->CreateTexture2D(&descDepth , NULL , &g_pDepthStencil);
+	if (FAILED(hr))
+		fatalError(L"Creating Detph Stencil Error");
+
+	// create depth stencil view
+	D3D10_DEPTH_STENCIL_VIEW_DESC descDSV;
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D10_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture1DArray.MipSlice = 0;
+
+	hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil , &descDSV , &g_pDepthStencilView);
+	if (FAILED(hr))
+		fatalError(L"Creating Depth Stencil View Error");
 
 	g_pd3dDevice->OMSetRenderTargets(1, &g_pRenderTargetView, NULL);
 

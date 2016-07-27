@@ -1,18 +1,5 @@
 #include "Window.h"
 
-Window::Window()
-{
-	w_Hinstance = NULL;
-	w_HWnd = NULL;
-
-}
-
-Window::~Window()
-{
-
-}
-
-
 
 //--------------------------------------------------------------------------------------
 // Called every time the application receives a message
@@ -42,17 +29,6 @@ LRESULT CALLBACK  Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-// Setters & Getters
-void Window::setHINSTANCE(HINSTANCE tmp)
-{
-	w_Hinstance = tmp;
-}
-
-HINSTANCE Window::getHINSTANCE()
-{
-	return w_Hinstance;
-}
-
 
 HRESULT Window::InitWindow(HINSTANCE hInstance, int nCmdShow , HWND& hWnd)
 {
@@ -74,11 +50,8 @@ HRESULT Window::InitWindow(HINSTANCE hInstance, int nCmdShow , HWND& hWnd)
 		//return dx.fatalError(L"RegisterClassEx Error When Initialize Window");
 		return fatalError(L"RegisterClassEx Error When Initialize Window");
 
-
-	//HINSTANCE tmpIns = NULL;
-	//HWND      tmpHwnd = NULL;
 	// Create window
-	w_Hinstance= hInstance;
+
 	RECT rc = { 0, 0, windowWidth, windowHeight };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	hWnd = CreateWindow(L"BlueScreen", L"DIRECTX 10 - TRIANGLE", WS_OVERLAPPEDWINDOW,
@@ -88,7 +61,7 @@ HRESULT Window::InitWindow(HINSTANCE hInstance, int nCmdShow , HWND& hWnd)
 		return fatalError(L"CreateWindow Error When Initialize Window");
 
 	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
+	//UpdateWindow(hWnd);
 	
 	return S_OK;
 }

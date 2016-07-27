@@ -4,7 +4,7 @@
 
 BtnCtrl::BtnCtrl()
 {
-	stepCount = 1.0f;
+	stepCount = 0.003f;
 
 	X = 0.0f;
 	Y = 1.0f;

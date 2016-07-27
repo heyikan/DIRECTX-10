@@ -7,12 +7,6 @@
 
 #include "BtnCtrl.h"
 
-#include <vector>
-
-
-
-#pragma comment (lib, "d3d10.lib")
-//#pragma comment (lib, "d3d10d.lib")
 
 //--------------------------------------------------------------------------------------
 // Structures
@@ -100,6 +94,11 @@ class dxManager:public BtnCtrl
 		D3DXMATRIX                  g_pWorld;
 		D3DXMATRIX                  g_pView;
 		D3DXMATRIX                  g_pProjection;
+
+		// Stencil Buffer
+		ID3D10Texture2D*			g_pDepthStencil;
+		ID3D10DepthStencilView*		g_pDepthStencilView;
+
 
 		D3D10_DRIVER_TYPE			g_driverType;
 
