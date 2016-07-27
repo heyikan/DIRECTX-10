@@ -23,6 +23,9 @@ dxManager::dxManager()
 	g_pVertexLayout = NULL;
 
 	g_pVertexBuffer = NULL;
+
+	
+
 	// Seting up window width and height.
 	windowWidth = 800;
 	windowHeight = 600;
@@ -34,6 +37,11 @@ dxManager::dxManager()
 *******************************************************************/
 dxManager::~dxManager()
 {
+	cleanUpDevice();
+}
+
+void dxManager::cleanUpDevice()
+{
 	if (g_pd3dDevice) g_pd3dDevice->ClearState();
 	if (g_pSwapChain) g_pSwapChain->Release();
 	if (g_pRenderTargetView) g_pRenderTargetView->Release();
@@ -41,7 +49,6 @@ dxManager::~dxManager()
 	if (g_pEffect) g_pEffect->Release();
 	if (g_pVertexLayout) g_pVertexLayout->Release();
 	if (g_pVertexBuffer) g_pVertexBuffer->Release();
-
 }
 
 void dxManager::Render()
@@ -49,6 +56,22 @@ void dxManager::Render()
 	// Just clear the backbuffer
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
 	g_pd3dDevice->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
+
+	// Update Variables
+	g_pWorldVariable->SetMatrix((float*) &g_pWorld);
+	g_pViewVariable->SetMatrix((float*) &g_pView);
+	g_pProjectionVariable->SetMatrix((float*)&g_pProjection);
+
+	// Render a triangle
+	D3D10_TECHNIQUE_DESC techDesc;
+	g_pTechnique->GetDesc(&techDesc);
+
+	for (UINT p = 0; p < techDesc.Passes; ++p)
+	{
+		g_pTechnique->GetPassByIndex(p)->Apply(0);
+		g_pd3dDevice->Draw(3,0);
+	}
+
 	g_pSwapChain->Present(0, 0);
 }
 
@@ -93,7 +116,8 @@ HRESULT dxManager::InitDevice(HWND* hW)
 	if (FAILED(setTriangleVertices()))
 		return false;
 
-	setMatrices();
+	if (FAILED(setMatrices()))
+		return false;
 
 	return S_OK;
 
@@ -317,10 +341,24 @@ HRESULT dxManager::setTriangleVertices()
 	return S_OK;
 }
 
-HRESULT setMatrices()
+HRESULT dxManager::setMatrices()
 {
 	// Initialize the world matrix
+	
+	
+	D3DXMatrixIdentity(&g_pWorld);
 
+	// Initialize the view matrix
+	D3DXVECTOR3 Eye(0.0f, 3.0f, -8.0f);
+	D3DXVECTOR3 At(0.0f, 0.0f, 1.0f);
+	D3DXVECTOR3 Up(0.0f, 1.0f, 0.0f);
+	
+	D3DXMatrixLookAtLH(&g_pView , &Eye , &At, &Up);
+
+	// Initialize the projection matrix
+	D3DXMatrixPerspectiveFovLH(&g_pProjection, (float)D3DX_PI * 0.25f, 1.33f, 0.1f, 100.0f);
+
+	return S_OK;
 
 }
 

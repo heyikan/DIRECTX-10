@@ -11,9 +11,6 @@
 *******************************************************************/
 HWND hWnd;					//window handle
 
-//--------------------------------------------------------------------------------------
-// Forward declarations
-//--------------------------------------------------------------------------------------
 
 // class declarations
 dxManager dx;
@@ -32,7 +29,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 
 	// Ýnitialize DirectX 10
-	if (FAILED(dx.InitDevice(&hWnd))) dx.fatalError(L"DirectX Initialization Failed!");
+	if (FAILED(dx.InitDevice(&hWnd))) {
+		dx.cleanUpDevice();
+		dx.fatalError(L"DirectX Initialization Failed!");
+	}
 
 	// Main message loop
 	MSG msg = { 0 };
@@ -46,6 +46,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 		dx.Render();
 	}
+
+	dx.cleanUpDevice();
 
 	return (int)msg.wParam;
 

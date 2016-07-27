@@ -47,6 +47,7 @@ class dxManager
 
 	void Render();
 
+	void cleanUpDevice();
 
 	//fatal error handler
 	bool fatalError(LPCWSTR msg);
@@ -88,9 +89,9 @@ class dxManager
 		ID3D10Buffer*				g_pVertexBuffer;
 
 		// Look Matrices
-		D3DXMATRIX                  g_World;
-		D3DXMATRIX                  g_View;
-		D3DXMATRIX                  g_Projection;
+		D3DXMATRIX                  g_pWorld;
+		D3DXMATRIX                  g_pView;
+		D3DXMATRIX                  g_pProjection;
 
 		D3D10_DRIVER_TYPE			g_driverType;
 
