@@ -14,7 +14,7 @@ dxManager::dxManager()
 	g_pSwapChain = NULL;
 	g_pRenderTargetView = NULL;
 	g_hWnd = NULL;
-	g_driverType = D3D10_DRIVER_TYPE_NULL;
+	g_driverType = D3D10_DRIVER_TYPE_HARDWARE;
 	
 	g_pEffect = NULL;
 	g_pTechnique = NULL;
@@ -209,18 +209,18 @@ HRESULT dxManager::createSwapChainAndDevice()
 	UINT height = rc.bottom - rc.top;
 	// Now windows dimensions determined...
 
-	UINT createDeviceFlags = 0;
-#ifdef _DEBUG
-	createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
-#endif
+	//UINT createDeviceFlags = 0;
+//#ifdef _DEBUG
+//	createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
+//#endif
 
-	D3D10_DRIVER_TYPE driverTypes[] =
-	{
-		D3D10_DRIVER_TYPE_HARDWARE,
-		D3D10_DRIVER_TYPE_REFERENCE,
-	};
+	//D3D10_DRIVER_TYPE driverTypes[] =
+	//{
+	//	D3D10_DRIVER_TYPE_HARDWARE,
+	//	D3D10_DRIVER_TYPE_REFERENCE,
+	//};
 
-	UINT numDriverTypes = sizeof(driverTypes) / sizeof(driverTypes[0]);
+	//UINT numDriverTypes = sizeof(driverTypes) / sizeof(driverTypes[0]);
 
 	//Set up DX swap chain
 	//--------------------------------------------------------------
@@ -265,16 +265,16 @@ HRESULT dxManager::createSwapChainAndDevice()
 	access to the video hardware.All Direct3D methods for drawing to the screen and
 	accessing VRAM are handled through the ID3D10Device object. */
 	//--------------------------------------------------------------
-	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
-	{
-		g_driverType = driverTypes[driverTypeIndex];
-		hr = D3D10CreateDeviceAndSwapChain(pAdapter, D3D10_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags,
+	//for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
+	//{
+	//	g_driverType = driverTypes[driverTypeIndex];
+		hr = D3D10CreateDeviceAndSwapChain(pAdapter, g_driverType, NULL, 0,
 			D3D10_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice);
 		if (FAILED(hr))
 			fatalError(L"D3D10CreateDeviceAndSwapChain Error!");
-	}
-	if (FAILED(hr))
-		fatalError(L"D3D device creation failed!");
+	//}
+	//if (FAILED(hr))
+	//	fatalError(L"D3D device creation failed!");
 	/*
 	The D3D10CreateDeviceAndSwapChain function will fill the pSwapChain variable
 	with a valid IDXGISwapChain object and the pD3DDevice variable with a valid
