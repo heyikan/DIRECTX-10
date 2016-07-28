@@ -166,3 +166,5 @@ technique10 texturingDisabled
     }
 }
 ```
+
+* Then we load these two techniques exactly as we did in the previous tutorial. If we compile and run the program we’re presented with a now textured quad.

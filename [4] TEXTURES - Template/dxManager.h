@@ -75,7 +75,7 @@ private:
 	//texture storage
 	std::vector<ID3D10ShaderResourceView*> g_textureSRV;
 	ID3D10EffectShaderResourceVariable* g_pTextureSR;
-	int textureIndex;
+	
 	
 	/*******************************************************************
 	* Methods
@@ -97,23 +97,46 @@ public:
 	//scene function
 	void renderScene();	
 
+	// viewPort Widht and Height
+	UINT viewPortHeight;
+	UINT viewPortWidth;
+
+	int windowHeight;
+	int windowWidth;
+
+	UINT numOfVertices;
+
+	HRESULT createRectangle();
+
+	bool texturesEnabled;
+	int textureIndex;
 private:
 
 	// Common HRESULT variable for return value
 	HRESULT hr;
 
 	//initialization methods
-	HRESULT createSwapChainAndDevice(UINT width, UINT height);
+	HRESULT createSwapChainAndDevice();
 	HRESULT loadShadersAndCreateInputLayouts();
-	void createViewports( UINT width, UINT height );
+	void createViewports();
 	void initRasterizerState();
 	HRESULT createRenderTargets();
 
 	//texture loader	
 	HRESULT loadTextures();
 
+
+
+	HRESULT setMatrices();
+
 	//fatal error handler
 	HRESULT fatalError(const LPCSTR msg);
+
+
+
+
+
+	
 };
 
 #endif

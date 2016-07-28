@@ -21,6 +21,11 @@ dxManager::dxManager() {
 	g_pBasicEffect = NULL;
 	g_pRS = NULL;
 
+	windowHeight = 600;
+	windowWidth = 800;
+
+	texturesEnabled = true;
+
 }
 /*******************************************************************
 * Destructor
@@ -55,9 +60,12 @@ bool dxManager::initialize( HWND* hW )
     UINT width = rc.right - rc.left;
     UINT height = rc.bottom - rc.top;
 
+	viewPortHeight = height;
+	viewPortWidth = width;
+
 	// CREATE DEVICE
 	//*****************************************************************************
-	if (FAILED(createSwapChainAndDevice(width, height)))
+	if (FAILED(createSwapChainAndDevice()))
 		return false;
 
 	// INPUT ASSEMBLY STAGE
@@ -67,7 +75,7 @@ bool dxManager::initialize( HWND* hW )
 
 	// RASTERIZER STAGE SETUP
 	//*****************************************************************************
-	createViewports(width, height);
+	createViewports();
 	initRasterizerState();	
 
 	// OUTPUT-MERGER STAGE
@@ -84,47 +92,24 @@ bool dxManager::initialize( HWND* hW )
 	// SET UP SCENE VARIABLES
 	//*****************************************************************************
 
-	//create vertex buffer (space for 100 vertices)
+	//create vertex buffer
 	//---------------------------------------------------------------------------------
-	UINT numVertices = 100;
+	if (FAILED(createRectangle()))
+		return false;
 
-	D3D10_BUFFER_DESC bd;
-	bd.Usage = D3D10_USAGE_DYNAMIC;
-	bd.ByteWidth = sizeof( vertex ) * numVertices;
-	bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
-	bd.MiscFlags = 0;
-
-	hr = g_pD3DDevice->CreateBuffer(&bd, NULL, &g_pVertexBuffer);
-	if ( FAILED(hr ) ) return fatalError("Could not create vertex buffer!");;
-
-	// Set vertex buffer
-	UINT stride = sizeof( vertex );
-	UINT offset = 0;
-	g_pD3DDevice->IASetVertexBuffers( 0, 1, &g_pVertexBuffer, &stride, &offset );
-	
 	// Set up the view and projection matrices
 	//*****************************************************************************
-	D3DXVECTOR3 camera[3] = {	D3DXVECTOR3(0.0f, 0.0f, -5.0f),
-								D3DXVECTOR3(0.0f, 0.0f, 1.0f),
-								D3DXVECTOR3(0.0f, 1.0f, 0.0f) };
-	D3DXMatrixLookAtLH(&g_viewMatrix, &camera[0], &camera[1], &camera[2]);		
+	if (FAILED(setMatrices()))
+		return false;
 	
-    D3DXMatrixPerspectiveFovLH(&g_projectionMatrix, (float)D3DX_PI * 0.5f, (float)width/(float)height, 0.1f, 100.0f);
-
-	D3DXMATRIX w;
-	D3DXMatrixIdentity(&w);		
-	g_pWorldMatrixEffectVariable->SetMatrix(w);
-	g_pViewMatrixEffectVariable->SetMatrix(g_viewMatrix);
-	g_pProjectionMatrixEffectVariable->SetMatrix(g_projectionMatrix);
-
+	
 	//everything completed successfully
 	return true;
 }
 /*******************************************************************
 * Create Swap Chain and D3D device
 *******************************************************************/
-HRESULT dxManager::createSwapChainAndDevice( UINT width, UINT height )
+HRESULT dxManager::createSwapChainAndDevice()
 {
 	//Set up DX swap chain
 	//--------------------------------------------------------------
@@ -133,8 +118,8 @@ HRESULT dxManager::createSwapChainAndDevice( UINT width, UINT height )
 	
 	//set buffer dimensions and format
 	swapChainDesc.BufferCount = 1;
-	swapChainDesc.BufferDesc.Width = width;
-	swapChainDesc.BufferDesc.Height = height;
+	swapChainDesc.BufferDesc.Width = viewPortWidth;
+	swapChainDesc.BufferDesc.Height = viewPortHeight;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;;
 	
@@ -168,11 +153,11 @@ HRESULT dxManager::createSwapChainAndDevice( UINT width, UINT height )
 /*******************************************************************
 * Set up Viewports
 *******************************************************************/
-void dxManager::createViewports( UINT width, UINT height )
+void dxManager::createViewports()
 {	
 	//create viewport structure	
-	g_viewPort.Width = width;
-	g_viewPort.Height = height;
+	g_viewPort.Width = viewPortWidth;
+	g_viewPort.Height = viewPortHeight;
 	g_viewPort.MinDepth = 0.0f;
 	g_viewPort.MaxDepth = 1.0f;
 	g_viewPort.TopLeftX = 0;
@@ -305,6 +290,63 @@ HRESULT dxManager::loadTextures()
 
 	return S_OK;
 }
+
+
+HRESULT dxManager::createRectangle()
+{
+
+	numOfVertices = 4;
+
+	D3D10_BUFFER_DESC bd;
+	bd.Usage = D3D10_USAGE_DYNAMIC;
+	bd.ByteWidth = sizeof(vertex)* numOfVertices;
+	bd.BindFlags = D3D10_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+	bd.MiscFlags = 0;
+
+	hr = g_pD3DDevice->CreateBuffer(&bd, NULL, &g_pVertexBuffer);
+	if (FAILED(hr)) return fatalError("Could not create vertex buffer!");;
+
+	// Set vertex buffer
+	UINT stride = sizeof(vertex);
+	UINT offset = 0;
+	g_pD3DDevice->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+
+	vertex* v = NULL;
+
+	//lock vertex buffer for CPU use
+	g_pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (void**)&v);
+
+	v[0] = vertex(D3DXVECTOR3(-1, -1, 0), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(0.0f, 2.0f));
+	v[1] = vertex(D3DXVECTOR3(-1, 1, 0), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
+	v[2] = vertex(D3DXVECTOR3(1, -1, 0), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(2.0f, 2.0f));
+	v[3] = vertex(D3DXVECTOR3(1, 1, 0), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(2.0f, 0.0f));
+
+	g_pVertexBuffer->Unmap();
+
+	// Set primitive topology 
+	g_pD3DDevice->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	
+}
+
+HRESULT	dxManager::setMatrices()
+{
+	D3DXVECTOR3 camera[3] = { D3DXVECTOR3(0.0f, 0.0f, -5.0f),
+		D3DXVECTOR3(0.0f, 0.0f, 1.0f),
+		D3DXVECTOR3(0.0f, 1.0f, 0.0f) };
+	D3DXMatrixLookAtLH(&g_viewMatrix, &camera[0], &camera[1], &camera[2]);
+
+	D3DXMatrixPerspectiveFovLH(&g_projectionMatrix, (float)D3DX_PI * 0.5f, (float)viewPortWidth / (float)viewPortHeight, 0.1f, 100.0f);
+
+	D3DXMATRIX w;
+	D3DXMatrixIdentity(&w);
+	g_pWorldMatrixEffectVariable->SetMatrix(w);
+	g_pViewMatrixEffectVariable->SetMatrix(g_viewMatrix);
+	g_pProjectionMatrixEffectVariable->SetMatrix(g_projectionMatrix);
+
+	return S_OK;
+}
 /*******************************************************************
 * Enable/Disable Texturing
 *******************************************************************/
@@ -332,27 +374,12 @@ void dxManager::swapTexture()
 void dxManager::renderScene()
 {
 	//clear scene
-	g_pD3DDevice->ClearRenderTargetView( g_pRenderTargetView, D3DXCOLOR(0,0,0,0) );
-	
-	//fill vertex buffer with vertices
-	UINT numVertices = 4;	
-	vertex* v = NULL;	
+	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
+	g_pD3DDevice->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
 
-	//lock vertex buffer for CPU use
-	g_pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (void**) &v );
-	
-	v[0] = vertex( D3DXVECTOR3(-1,-1,0), D3DXVECTOR4(1,0,0,1), D3DXVECTOR2(0.0f, 2.0f) );
-	v[1] = vertex( D3DXVECTOR3(-1,1,0), D3DXVECTOR4(0,1,0,1), D3DXVECTOR2(0.0f, 0.0f) );
-	v[2] = vertex( D3DXVECTOR3(1,-1,0), D3DXVECTOR4(0,0,1,1), D3DXVECTOR2(2.0f, 2.0f) );
-	v[3] = vertex( D3DXVECTOR3(1,1,0), D3DXVECTOR4(1,1,0,1), D3DXVECTOR2(2.0f, 0.0f) );	
-
-	g_pVertexBuffer->Unmap();
-
-	// Set primitive topology 
-	g_pD3DDevice->IASetPrimitiveTopology( D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP );
 
 	//set texture
-	g_pTextureSR->SetResource( g_textureSRV[textureIndex] );
+	g_pTextureSR->SetResource(g_textureSRV[textureIndex]);
 
 	//get technique desc
 	D3D10_TECHNIQUE_DESC techDesc;
@@ -364,7 +391,7 @@ void dxManager::renderScene()
 		g_pBasicTechnique->GetPassByIndex(p)->Apply(0);
 				
 		//draw
-		g_pD3DDevice->Draw(numVertices, 0);
+		g_pD3DDevice->Draw(numOfVertices, 0);
 	}
 
 	//flip buffers
