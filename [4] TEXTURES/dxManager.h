@@ -39,16 +39,18 @@ class dxManager:public BtnCtrl
 	HRESULT createSwapChainAndDevice();
 	HRESULT createRenderTargetView();
 	HRESULT createViewPort();
-	HRESULT createEffectAndGetTechniques();
+	HRESULT loadShadersAndCreateInputLayouts(LPWSTR fileName);
 	HRESULT createAndSetInputLayout();
-	HRESULT setTriangleVertices();
+	HRESULT setRectangleVertices();
 	HRESULT setMatrices();
 	HRESULT setCubeVertices();
+	HRESULT initRasterizerState();
+
 
 	HRESULT setIndexBuffrers();
 	HRESULT setVertexBuffers();
 
-	HRESULT createShaderResouceViewFromFile();
+	HRESULT loadTextures();
 
 
 	void Render();

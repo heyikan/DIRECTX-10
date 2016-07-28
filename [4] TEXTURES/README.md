@@ -57,7 +57,112 @@ We use a 2d vector to specify the u,v coordinates for each vertex. So this also 
 
 ```c
 v[0] = vertex( D3DXVECTOR3(-1,-1,0),D3DXVECTOR4(1,0,0,1),D3DXVECTOR2(0.0f, 1.0f) );
-.
-.
+v[1] = vertex( D3DXVECTOR3(-1,1,0),D3DXVECTOR4(0,1,0,1),D3DXVECTOR2(0.0f, 0.0f) );
+v[2] = vertex( D3DXVECTOR3(1,-1,0),D3DXVECTOR4(0,0,1,1),D3DXVECTOR2(1.0f, 1.0f) );
+v[3] = vertex( D3DXVECTOR3(1,1,0),D3DXVECTOR4(1,1,0,1),D3DXVECTOR2(1.0f, 0.0f) );
+```
 
+* Since we changed the vertex struct we also need to modify the inputlayout accordingly, remember that the input layout tells DX what each vertex looks like. All we need to change is the input_element_desc for the input layout:
+
+```c
+D3D10_INPUT_ELEMENT_DESC layout[] =
+{
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+    { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+    { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D10_INPUT_PER_VERTEX_DATA, 0 }
+};
+```
+
+
+## Texturing using the Pixel Shader
+
+So lets just tweak the shader program (Texture.fx), first thing we need to do is specify a texture variable for the shader as such:
+
+```c
+Texture2D tex2D;
+```
+* Then we create a samplerState, remember when I said earlier that we sample the texture to get a color at a specific set of u,v coordinates, a texture resource in HLSL has a sample method that samples that texture and returns the value at a specific point, now the way in which it sample that texture is done via the sampleState object. This object sets all the parameters for the default sampler. A very basic samplerState is show below:
+
+```c
+SamplerState linearSampler
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+```
+* It has three elements: a filter which specifies how the sampling is to be done over the texture, in our case we’re just doing a basic linear sampling (all the sampling states and their descriptions are available in the SDK docs, the addressU and addressV specify how to handle u and v values that lie outside the 0 to 1 range.
+
+* Remember how I said that u and v are in the range 0 to 1, well that’s not exactly true, sometimes to want to texture an object using 4 smaller versions of a texture rather than stretching the texture to fit the the object. The below image shows what happens for a few common addressU , addressV values:
+
+![texture](.//img//textures2.jpg)
+
+* There are other state variables for the samplerState object, once again all the info necessary is in the sdk docs.
+
+* Now we need to modify the vs_input and ps_input structs to handle the extra 2d texcoord variable:
+
+```c
+struct VS_INPUT
+{
+    float4 Pos : POSITION;
+    float4 Color : COLOR;
+    float2 Tex : TEXCOORD;
+};
+
+struct PS_INPUT
+{
+    float4 Pos : SV_POSITION;
+    float4 Color : COLOR;
+    float2 Tex : TEXCOORD;
+};
+```
+
+* And the vector and pixel shaders accordingly. The only difference in the pixel shader is that for texturing we need to return the sampled color and not the vertex color. We use the sample method on the texture object , the sampler state we defined earlier and the texture coordinates we specified earlier.
+
+```c
+PS_INPUT VS( VS_INPUT input )
+{
+    PS_INPUT output;
+    output.Pos = mul( input.Pos, World );
+    output.Pos = mul( output.Pos, View );
+    output.Pos = mul( output.Pos, Projection );
+    output.Color = input.Color;
+    output.Tex = input.Tex;
+
+    return output;
+}
+
+float4 textured( PS_INPUT input ) : SV_Target
+{
+    return tex2D.Sample( linearSampler, input.Tex );
+}
+
+float4 noTexture( PS_INPUT input ) : SV_Target
+{
+    return input.Color;
+}
+```
+
+* We also create two new techniques “full” and “texturing disabled”:
+
+```c
+technique10 full
+{
+    pass P0
+    {
+        SetVertexShader( CompileShader( vs_4_0, VS() ) );
+        SetGeometryShader( NULL );
+        SetPixelShader( CompileShader( ps_4_0, textured() ) );
+    }
+}
+
+technique10 texturingDisabled
+{
+    pass P0
+    {
+        SetVertexShader( CompileShader( vs_4_0, VS() ) );
+        SetGeometryShader( NULL );
+        SetPixelShader( CompileShader( ps_4_0, noTexture() ) );
+    }
+}
 ```

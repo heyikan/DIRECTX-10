@@ -89,19 +89,19 @@ void dxManager::Render()
 
 
 	// Update our time
-	static float t = 0.0f;
-	if (g_driverType == D3D10_DRIVER_TYPE_REFERENCE)
-	{
-		t += (float)D3DX_PI * 0.0125f;
-	}
-	else
-	{
-		static DWORD dwTimeStart = 0;
-		DWORD dwTimeCur = GetTickCount();
-		if (dwTimeStart == 0)
-			dwTimeStart = dwTimeCur;
-		t = (dwTimeCur - dwTimeStart) / 1000.0f;
-	}
+	//static float t = 0.0f;
+	//if (g_driverType == D3D10_DRIVER_TYPE_REFERENCE)
+	//{
+	//	t += (float)D3DX_PI * 0.0125f;
+	//}
+	//else
+	//{
+	//	static DWORD dwTimeStart = 0;
+	//	DWORD dwTimeCur = GetTickCount();
+	//	if (dwTimeStart == 0)
+	//		dwTimeStart = dwTimeCur;
+	//	t = (dwTimeCur - dwTimeStart) / 1000.0f;
+	//}
 
 	// Just clear the backbuffer
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
@@ -110,7 +110,7 @@ void dxManager::Render()
 	//
 	// Clear the depth buffer to 1.0 (max depth)
 	//
-	g_pd3dDevice->ClearDepthStencilView(g_pDepthStencilView, D3D10_CLEAR_DEPTH, 1.0f, 0);
+	//g_pd3dDevice->ClearDepthStencilView(g_pDepthStencilView, D3D10_CLEAR_DEPTH, 1.0f, 0);
 
 	//
 	// Animate the cube
@@ -119,10 +119,9 @@ void dxManager::Render()
 
 
 
-	// Update Variables
-	g_pWorldVariable->SetMatrix((float*) &g_pWorld);
-	g_pViewVariable->SetMatrix((float*) &g_pView);
-	g_pProjectionVariable->SetMatrix((float*)&g_pProjection);
+	//set texture
+	g_pTextureSR->SetResource(g_textureSRV);
+
 
 	// Render a Primitives
 	D3D10_TECHNIQUE_DESC techDesc;
@@ -131,8 +130,8 @@ void dxManager::Render()
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
 		g_pTechnique->GetPassByIndex(p)->Apply(0);
-		g_pd3dDevice->DrawIndexed(36, 0,0);
-		//g_pd3dDevice->Draw(3,0);
+		//g_pd3dDevice->DrawIndexed(36, 0,0);
+		g_pd3dDevice->Draw(4,0);
 	}
 
 	g_pSwapChain->Present(0, 0);
@@ -148,34 +147,43 @@ HRESULT dxManager::InitDevice(HWND* hW)
 	if (FAILED(createSwapChainAndDevice())) 
 		return false;
 
-	// Create a render target view
-	if (FAILED(createRenderTargetView()))
+	// Creating Effect and Get Techniques by Name
+	if (FAILED(loadShadersAndCreateInputLayouts(L"Texture.fx")))
 		return false;
 
 	// Create viewport
 	if (FAILED(createViewPort()))
+		return false;	
+
+	// Create a render target view
+	if (FAILED(initRasterizerState()))
 		return false;
 
-	// Creating Effect and Get Techniques by Name
-	if (FAILED(createShaderResouceViewFromFile()))
+	// Create a render target view
+	if (FAILED(createRenderTargetView()))
 		return false;
 
-	// Creating Effect and Get Techniques by Name
-	if (FAILED(createEffectAndGetTechniques()))
-		return false;
-	
-	// creating the input layout
-	if (FAILED(	createAndSetInputLayout()) )
-		return false;
 
-	//// Setting the triangle vertices
-	//if (FAILED(setTriangleVertices()))
+
+
+	//// Creating Effect and Get Techniques by Name
+	//if (FAILED(createEffectAndGetTechniques(L"Rectangle.fx")))
 	//	return false;
 
 
-	// Setting the triangle vertices
-	if (FAILED(setCubeVertices()))
+	// Creating Effect and Get Techniques by Name
+	// Loading the texture file from here.
+	if (FAILED(loadTextures()))
 		return false;
+
+	// Setting the triangle vertices
+	if (FAILED(setRectangleVertices()))
+		return false;
+
+
+	// Setting the triangle vertices
+	//if (FAILED(setCubeVertices()))
+	//	return false;
 
 	if (FAILED(setMatrices()))
 		return false;
@@ -291,33 +299,34 @@ HRESULT dxManager::createRenderTargetView()
 		fatalError(L"createRenderTargetView Error!");
 
 
-	// create depth stencil texture
-	D3D10_TEXTURE2D_DESC descDepth;
-	descDepth.Width = windowWidth;
-	descDepth.Height = windowHeight;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D10_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D10_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
+	//// create depth stencil texture
+	//D3D10_TEXTURE2D_DESC descDepth;
+	//descDepth.Width = windowWidth;
+	//descDepth.Height = windowHeight;
+	//descDepth.MipLevels = 1;
+	//descDepth.ArraySize = 1;
+	//descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+	//descDepth.SampleDesc.Count = 1;
+	//descDepth.SampleDesc.Quality = 0;
+	//descDepth.Usage = D3D10_USAGE_DEFAULT;
+	//descDepth.BindFlags = D3D10_BIND_DEPTH_STENCIL;
+	//descDepth.CPUAccessFlags = 0;
+	//descDepth.MiscFlags = 0;
 
-	hr = g_pd3dDevice->CreateTexture2D(&descDepth , NULL , &g_pDepthStencil);
-	if (FAILED(hr))
-		fatalError(L"Creating Detph Stencil Error");
+	//hr = g_pd3dDevice->CreateTexture2D(&descDepth , NULL , &g_pDepthStencil);
+	//if (FAILED(hr))
+	//	fatalError(L"Creating Detph Stencil Error");
 
-	// create depth stencil view
-	D3D10_DEPTH_STENCIL_VIEW_DESC descDSV;
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D10_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture1DArray.MipSlice = 0;
+	//// create depth stencil view
+	//D3D10_DEPTH_STENCIL_VIEW_DESC descDSV;
+	//descDSV.Format = descDepth.Format;
+	//descDSV.ViewDimension = D3D10_DSV_DIMENSION_TEXTURE2D;
+	//descDSV.Texture1DArray.MipSlice = 0;
 
-	hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil , &descDSV , &g_pDepthStencilView);
-	if (FAILED(hr))
-		fatalError(L"Creating Depth Stencil View Error");
+	//hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil , &descDSV , &g_pDepthStencilView);
+	//if (FAILED(hr))
+	//	fatalError(L"Creating Depth Stencil View Error");
+
 
 	g_pd3dDevice->OMSetRenderTargets(1, &g_pRenderTargetView, NULL);
 
@@ -340,9 +349,30 @@ HRESULT dxManager::createViewPort()
 	return S_OK;
 }
 
+HRESULT dxManager::initRasterizerState()
+{
+	D3D10_RASTERIZER_DESC rasterizerState;
+	rasterizerState.CullMode = D3D10_CULL_NONE;
+	rasterizerState.FillMode = D3D10_FILL_SOLID;
+	rasterizerState.FrontCounterClockwise = true;
+	rasterizerState.DepthBias = false;
+	rasterizerState.DepthBiasClamp = 0;
+	rasterizerState.SlopeScaledDepthBias = 0;
+	rasterizerState.DepthClipEnable = true;
+	rasterizerState.ScissorEnable = false;
+	rasterizerState.MultisampleEnable = false;
+	rasterizerState.AntialiasedLineEnable = true;
 
+	ID3D10RasterizerState*		pRS;
 
-HRESULT dxManager::createShaderResouceViewFromFile()
+	g_pd3dDevice->CreateRasterizerState(&rasterizerState , &pRS);
+	g_pd3dDevice->RSSetState(pRS);
+	pRS->Release();
+
+	return S_OK;
+}
+
+HRESULT dxManager::loadTextures()
 {
 	// Load texture maps
 	hr = D3DX10CreateShaderResourceViewFromFile(g_pd3dDevice , L".\\Textures\\t1.bmp", NULL , NULL ,&g_textureSRV , NULL);
@@ -350,11 +380,13 @@ HRESULT dxManager::createShaderResouceViewFromFile()
 	if (FAILED(hr))
 		fatalError(L"Texture could not created!");
 	
+	g_pTextureSR->SetResource(g_textureSRV);
+
 	return S_OK;
 }
 
 
-HRESULT dxManager::createEffectAndGetTechniques()
+HRESULT dxManager::loadShadersAndCreateInputLayouts(LPWSTR fileName)
 {
 	// Create the effect
 	DWORD dwShaderFlags = D3D10_SHADER_ENABLE_STRICTNESS;
@@ -366,7 +398,7 @@ HRESULT dxManager::createEffectAndGetTechniques()
 	dwShaderFlags |= D3D10_SHADER_DEBUG;
 #endif
 
-	hr = D3DX10CreateEffectFromFile(L"Triangle.fx", NULL, NULL, "fx_4_0", dwShaderFlags, 0, g_pd3dDevice, NULL,
+	hr = D3DX10CreateEffectFromFile(fileName, NULL, NULL, "fx_4_0", dwShaderFlags, 0, g_pd3dDevice, NULL,
 		NULL, &g_pEffect, NULL, NULL);
 
 	if (FAILED(hr))
@@ -375,12 +407,22 @@ HRESULT dxManager::createEffectAndGetTechniques()
 	// Getting techniques
 
 	// Obtain techniques
-	g_pTechnique = g_pEffect->GetTechniqueByName("Render");
+	g_pTechnique = g_pEffect->GetTechniqueByName("full");
+	if (g_pTechnique == NULL) return fatalError(L"Could not find specified technique!");
 
 	// Obtain the variables for shader file
 	g_pWorldVariable = g_pEffect->GetVariableByName("World")->AsMatrix();
 	g_pViewVariable = g_pEffect->GetVariableByName("View")->AsMatrix();
 	g_pProjectionVariable = g_pEffect->GetVariableByName("Projection")->AsMatrix();
+	
+	// Getting texture variable as shader resource
+	g_pTextureSR = g_pEffect->GetVariableByName("text2D")->AsShaderResource();
+
+
+	// creating the input layout
+	if (FAILED(createAndSetInputLayout()))
+		return false;
+
 
 	return S_OK;
 
@@ -393,6 +435,7 @@ HRESULT dxManager::createAndSetInputLayout()
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D10_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D10_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D10_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	// calculating number of elements
 	UINT numElements = sizeof(layout) / sizeof(layout[0]);
@@ -415,17 +458,18 @@ HRESULT dxManager::createAndSetInputLayout()
 
 }
 
-HRESULT dxManager::setTriangleVertices()
+HRESULT dxManager::setRectangleVertices()
 {
 	// fill vertex buffer with vertices
-	UINT numVertices = 3;
+	UINT numVertices = 4;
 	//Vertex* v = NULL;
 
 	Vertex vertices[] =
 	{
-		D3DXVECTOR3(0.0f, 1.0f, 1.0f),
-		D3DXVECTOR3(1.0f, -1.0f, 1.0f),
-		D3DXVECTOR3(-1.0f, -1.0f, 1.0f)
+		{ D3DXVECTOR3(-1.0f, -1.0f, 0.0f), D3DXVECTOR4(1, 0, 0, 1) , D3DXVECTOR2(0.0f , 2.0f) },
+		{ D3DXVECTOR3(-1.0f,  1.0f, 0.0f), D3DXVECTOR4(0, 1, 0, 1) , D3DXVECTOR2(0.0f , 0.0f) },
+		{ D3DXVECTOR3( 1.0f, -1.0f, 0.0f), D3DXVECTOR4(0, 0, 1, 1) , D3DXVECTOR2(2.0f , 2.0f) },
+		{ D3DXVECTOR3( 1.0f,  1.0f, 0.0f), D3DXVECTOR4(1, 1, 0, 1) , D3DXVECTOR2(2.0f , 0.0f) },
 	};
 
 	//v[0] = Vertex(D3DXVECTOR3(0.0f, 1.0f, 1.0f));
@@ -454,7 +498,7 @@ HRESULT dxManager::setTriangleVertices()
 	UINT offset = 0;
 	g_pd3dDevice->IASetVertexBuffers(0,1,&g_pVertexBuffer , &stride , &offset);
 
-	g_pd3dDevice->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	g_pd3dDevice->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 	return S_OK;
 }
@@ -567,7 +611,7 @@ HRESULT dxManager::setMatrices()
 	D3DXMatrixIdentity(&g_pWorld);
 
 	// Initialize the view matrix
-	//D3DXVECTOR3 Eye(0.0f, 3.0f, -10.0f);
+	//D3DXVECTOR3 Eye(0.0f, 0.0f, -5.0f);
 	D3DXVECTOR3 Eye(getX(), getY(), getZ());
 	D3DXVECTOR3 At(0.0f, 0.0f, 1.0f);
 	D3DXVECTOR3 Up(0.0f, 1.0f, 0.0f);
@@ -576,6 +620,11 @@ HRESULT dxManager::setMatrices()
 
 	// Initialize the projection matrix
 	D3DXMatrixPerspectiveFovLH(&g_pProjection, (float)D3DX_PI * 0.25f, 1.33f, 0.1f, 100.0f);
+
+	// Update Variables
+	g_pWorldVariable->SetMatrix((float*)&g_pWorld);
+	g_pViewVariable->SetMatrix((float*)&g_pView);
+	g_pProjectionVariable->SetMatrix((float*)&g_pProjection);
 
 	return S_OK;
 
