@@ -206,3 +206,65 @@ UINT offset = 0;
 ##### output:
 
 ![Vertex Index Cube](.//img//vertexindexcube.PNG)
+
+## Depth Testing (Z-buffering)
+
+* In DX10, depth testing is accomplished by making use of a depth stencil, there is a nicely detailed section in the SDK docs regarding the Output-Merger Stage, and here they cover how DX10 accomplishes the depth stencil test internally.
+
+* So lets just briefly go over what depth testing is, we have a **depth buffer** that stores the distance for each pixel in the screen to the camera, so for every pixel we draw from the pixel shader, we compare it’s distance to the camera to the distance stored in the depth buffer, if the new pixel is closer than the distance in the depth buffer then it is drawn and the depth buffer is updated with that pixels distance. That way we only draw the closest visible objects to the viewer, obstruction further objects.
+
+* So lets enable this in DX10:
+
+```c
+//dx manager members
+ID3D10Texture2D* pDepthStencil;
+ID3D10DepthStencilView* pDepthStencilView;
+
+bool dxManager::createRenderTargetsAndDepthBuffer( UINT width, UINT height )
+{
+    //try to get the back buffer
+    ID3D10Texture2D* pBackBuffer;
+
+    if ( FAILED( pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*) &pBackBuffer) ) ) return fatalError("Could not get back buffer");
+
+    //try to create render target view
+    if ( FAILED( pD3DDevice->CreateRenderTargetView(pBackBuffer, NULL, &pRenderTargetView) ) ) return fatalError("Could not create render target view");
+    pBackBuffer->Release();
+
+    //create depth stencil texture
+    D3D10_TEXTURE2D_DESC descDepth;
+
+    descDepth.Width = width;
+    descDepth.Height = height;
+    descDepth.MipLevels = 1;
+    descDepth.ArraySize = 1;
+    descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+    descDepth.SampleDesc.Count = 1;
+    descDepth.SampleDesc.Quality = 0;
+    descDepth.Usage = D3D10_USAGE_DEFAULT;
+    descDepth.BindFlags = D3D10_BIND_DEPTH_STENCIL;
+    descDepth.CPUAccessFlags = 0;
+    descDepth.MiscFlags = 0;
+
+    if( FAILED( pD3DDevice->CreateTexture2D( &descDepth, NULL, &pDepthStencil ) ) ) return fatalError("Could not create depth stencil texture");
+
+    // Create the depth stencil view
+    D3D10_DEPTH_STENCIL_VIEW_DESC descDSV;
+    descDSV.Format = descDepth.Format;
+    descDSV.ViewDimension = D3D10_DSV_DIMENSION_TEXTURE2D;
+    descDSV.Texture2D.MipSlice = 0;
+
+    if( FAILED( pD3DDevice->CreateDepthStencilView( pDepthStencil, &descDSV, &pDepthStencilView ) ) ) return fatalError("Could not create depth stencil view");
+
+    //set render targets
+    pD3DDevice->OMSetRenderTargets( 1, &pRenderTargetView, pDepthStencilView );
+
+    return true;
+}
+```
+* First we add two new members in the dxmanager class, a ID3D10Texture2D depth stencil pointer and a depth stencil view pointer. Then we create a new texture and assign it to the depth stencil pointer. After this we create a view to the texture by making use of a depth stencil view desc, sort of like the way we created texture views.
+
+* The final step is to modify the Output manager’s render targets to include the depth stencil, this automatically enables depth testing. Once we run the program, we get this result:
+
+
+![Depth Stencil](.//img//depthstencil.PNG)
