@@ -61,6 +61,24 @@ for( UINT p = 0; p < techDesc.Passes; p++ )
 
 * The code above produces the following cube (I’ve added rotation and moved the camera – take a look at the code for more details), noticed the depth problem, whatever face got drawn last is on top irrespective of whether it is obscure by another face.
 
-![texture](.//img//depth1.jpg)
+![depth](.//img//depth1.jpg)
 
 * So as you can see to draw our cube we need to define each vertex and add it to the vertex buffer, then call the draw method 6 times. Each draw call draws a single triangle list with 4 vertices, drawing each face. So in this method we send 24 vertices down the pipeline and use 4 draw calls. This is a little crazy just to draw a single cube with only 8 vertices. There must be a simple more efficient method of doing this and there is: indexing.
+
+## Index Buffers vs Vertex Buffes
+
+>Vertex buffer stores vertex coordinates.
+Index buffer stores indices.
+If you connect vertices stored in vertex buffer in order defined by index array you'll get proper primitives rendered.
+
+>Bu uygulamanın üçgen çiziminden en önemli farklı vertex buffera ek olarak index buffer kullanılmasıdır. Bilindiği gibi vertex buffer köşe noktalarının koordinatlarını tutuyordu. Index buffer bu köşe noktalarını indisleyerek üçgenleri oluşturur:
+
+
+![index](.//img//vertexindex.png)
+
+> 6 yüzeye sahip küpün her bir yüzeyi 2 üçgenden oluştuğundan indices[] dizisinde 6x2=12 üçgeni temsil etmek üzere toplam 12x3=36 tane indis vardır. Küpün sadece vertex buffer ile de çizilmesi mümkündür. Yalnız bu durumda 36 tane köşe noktası içeren bir vertex buffer tanımlanmalıdır. Bu ise bellek israfı demektir.
+
+
+## Index Buffers
+
+What indexing does is let you pass a vertex buffer containing all the key vertices down the pipeline, and also a list of the order the vertices must be drawn in. So for our cube you’ll send the 8 vertices down the pipeline followed by a list of the order to draw them in. It’ll be a bit clearer once you see the code and of course read the index buffer sections in the SDK docs.
