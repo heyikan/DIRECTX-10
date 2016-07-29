@@ -80,7 +80,7 @@ bool dxManager::initialize( HWND* hW )
 
 	// OUTPUT-MERGER STAGE
 	//*****************************************************************************
-	if (FAILED(createRenderTargets()))
+	if (FAILED(createRenderTargetsAndDepthBuffer()))
 		return false;
 	
 	// LOAD TEXTURES
@@ -211,7 +211,7 @@ void dxManager::initRasterizerState()
 /*******************************************************************
 * Create Rendering Targets
 *******************************************************************/
-HRESULT dxManager::createRenderTargets()
+HRESULT dxManager::createRenderTargetsAndDepthBuffer()
 {
 	//try to get the back buffer
 	ID3D10Texture2D* pBackBuffer;	
@@ -225,7 +225,39 @@ HRESULT dxManager::createRenderTargets()
 	if ( FAILED( hr ) )return fatalError("Could not create render target view");
 	
 	pBackBuffer->Release();
-	g_pD3DDevice->OMSetRenderTargets(1, &g_pRenderTargetView, NULL);
+
+
+
+	// create depth stencil texture
+	D3D10_TEXTURE2D_DESC descDepth;
+	descDepth.Width = windowWidth;
+	descDepth.Height = windowHeight;
+	
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	
+	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D10_USAGE_DEFAULT;
+
+	descDepth.BindFlags = D3D10_BIND_DEPTH_STENCIL;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+
+	hr = g_pD3DDevice->CreateTexture2D(&descDepth, NULL, &g_pDepthStencil);
+	if (FAILED(hr)) return fatalError("Depth Stencil View Error!");
+
+	// create depth stencil view
+	D3D10_DEPTH_STENCIL_VIEW_DESC descDSV;
+	descDSV.Format = descDepth.Format;
+	descDSV.ViewDimension = D3D10_DSV_DIMENSION_TEXTURE2D;
+	descDSV.Texture2D.MipSlice = 0;
+
+	hr = g_pD3DDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
+		if (FAILED(hr)) return fatalError("Creating Depth Stencil View Error");
+	
+		g_pD3DDevice->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
 
 	return S_OK;
 }
@@ -451,9 +483,11 @@ HRESULT dxManager::initIndexBuffer()
 
 	// create index buffer
 	D3D10_BUFFER_DESC bd;
-	bd.ByteWidth = sizeof(vertex)* numOfVertices;
-	bd.Usage = D3D10_USAGE_DYNAMIC;
+	//change buffer desc bytewidth to index type and set bind type to index buffer
+	bd.ByteWidth = sizeof(unsigned int)* numOfVertices;
 	bd.BindFlags = D3D10_BIND_INDEX_BUFFER;
+
+	bd.Usage = D3D10_USAGE_DYNAMIC;
 	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
 	bd.MiscFlags = 0;
 
@@ -569,7 +603,7 @@ void dxManager::renderScene()
 	//clear scene
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
 	g_pD3DDevice->ClearRenderTargetView(g_pRenderTargetView, ClearColor);
-
+	g_pD3DDevice->ClearDepthStencilView(g_pDepthStencilView, D3D10_CLEAR_DEPTH, 1.0f, 0);
 
 	//set texture
 	g_pTextureSR->SetResource(g_textureSRV[textureIndex]);

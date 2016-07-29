@@ -76,6 +76,10 @@ private:
 	//texture storage
 	std::vector<ID3D10ShaderResourceView*> g_textureSRV;
 	ID3D10EffectShaderResourceVariable* g_pTextureSR;
+
+	// dx manager members
+	ID3D10Texture2D*			g_pDepthStencil;
+	ID3D10DepthStencilView*		g_pDepthStencilView;
 	
 	
 	/*******************************************************************
@@ -124,7 +128,7 @@ private:
 	HRESULT loadShadersAndCreateInputLayouts();
 	void createViewports();
 	void initRasterizerState();
-	HRESULT createRenderTargets();
+	HRESULT createRenderTargetsAndDepthBuffer();
 
 	//texture loader	
 	HRESULT loadTextures();
