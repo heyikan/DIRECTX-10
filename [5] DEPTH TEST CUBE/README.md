@@ -166,6 +166,9 @@ for( UINT p = 0; p < techDesc.Passes; p++ )
 }
 
 ```
+* Well not really once you look at it, we add the 8 key vertices to the vertex buffer exactly as before. Then we map the index buffer in exactly the same way as the vertex buffer and start filling it with the indexes of vertices in the vertex buffer. So for the front face we’re telling it, draw the front bottom left vertex, then the front top left vertex, then the front bottom right and finally the front top right. Now whats the 0xffffffff mean? Well that indicates that a new line list or triangle list must be started at that point, It does the same job as calling a draw call for each face without any of the overhead.
+
+* So lets do some basic maths on what we saved by using indexing rather than the standard vertex buffer method. We had a vertex buffer filled with 24 vertices (each vertex weighing in at 224bits) so the vertex buffer 672bytes large. In the second case the vertex buffer is 224bytes, and we have an index buffer with 29 32bit ints (116bytes) so a total of: 340bytes. That’s nearly 50% reduction in memory used, not to mention we are only using a single draw call compared to 4 draw calls when using just a vertex buffer.
 
 * So how do we create the index buffer? Well in DX10 all buffers are the same so we create an index buffer the in the same manner we created a vertex buffer with a few minor changes:
 
