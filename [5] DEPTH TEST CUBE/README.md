@@ -82,3 +82,120 @@ If you connect vertices stored in vertex buffer in order defined by index array 
 ## Index Buffers
 
 What indexing does is let you pass a vertex buffer containing all the key vertices down the pipeline, and also a list of the order the vertices must be drawn in. So for our cube you’ll send the 8 vertices down the pipeline followed by a list of the order to draw them in. It’ll be a bit clearer once you see the code and of course read the index buffer sections in the SDK docs.
+
+```c
+//lock vertex buffer for CPU use
+pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (void**) &v );
+
+//vertices for a cube
+v[0] = vertex( D3DXVECTOR3(-1,1,-1), D3DXVECTOR4(1,0,0,1) ); //front top left
+v[1] = vertex( D3DXVECTOR3(1,1,-1), D3DXVECTOR4(0,1,0,1) ); //front top right
+v[2] = vertex( D3DXVECTOR3(-1,-1,-1), D3DXVECTOR4(0,0,1,1) ); //front bottom left
+v[3] = vertex( D3DXVECTOR3(1,-1,-1), D3DXVECTOR4(1,1,0,1) ); //front bottom right
+v[4] = vertex( D3DXVECTOR3(-1,1,1), D3DXVECTOR4(1,0,0,1) ); //back top left
+v[5] = vertex( D3DXVECTOR3(1,1,1), D3DXVECTOR4(0,1,0,1) ); //back top right
+v[6] = vertex( D3DXVECTOR3(-1,-1,1), D3DXVECTOR4(0,0,1,1) ); //back bottom left
+v[7] = vertex( D3DXVECTOR3(1,-1,1), D3DXVECTOR4(1,1,0,1) ); //back bottom right
+
+pVertexBuffer->Unmap();
+```
+
+##### output:
+
+![Just Vertex](.//img//justvertex.PNG)
+
+* so it needs to crete indexes of that cube:
+
+```c
+
+//create indexes for a cube
+unsigned int* i = NULL;
+pIndexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (void**) &i );
+
+//front face
+i[0] = 2;
+i[1] = 0;
+i[2] = 3;
+i[3] = 1;
+i[4] = 0xffffffff; //start new strip
+
+//right face
+i[5] = 3;
+i[6] = 1;
+i[7] = 7;
+i[8] = 5;
+i[9] = 0xffffffff;
+
+//left face
+i[10] = 6;
+i[11] = 4;
+i[12] = 2;
+i[13] = 0;
+i[14] = 0xffffffff;
+
+//back face
+i[15] = 7;
+i[16] = 5;
+i[17] = 6;
+i[18] = 4;
+i[19] = 0xffffffff;
+
+//top face
+i[20] = 0;
+i[21] = 4;
+i[22] = 1;
+i[23] = 5;
+i[24] = 0xffffffff;
+
+//bottom face
+i[25] = 6;
+i[26] = 2;
+i[27] = 7;
+i[28] = 3;
+
+pIndexBuffer->Unmap();
+
+//send vertices down pipeline
+for( UINT p = 0; p < techDesc.Passes; p++ )
+{
+    //apply technique
+    pBasicTechnique->GetPassByIndex( p )->Apply( 0 );
+
+    //draw 5 quads - 29 indexes = 4 indexes x 6 faces + 5 breaks
+    pD3DDevice->DrawIndexed( 29, 0, 0 );
+}
+
+```
+
+* So how do we create the index buffer? Well in DX10 all buffers are the same so we create an index buffer the in the same manner we created a vertex buffer with a few minor changes:
+
+```c
+
+
+	// create index buffer
+	D3D10_BUFFER_DESC bd;
+	bd.ByteWidth = sizeof(vertex)* numOfVertices;
+	bd.Usage = D3D10_USAGE_DYNAMIC;
+	bd.BindFlags = D3D10_BIND_INDEX_BUFFER;
+	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+	bd.MiscFlags = 0;
+
+  hr = g_pD3DDevice->CreateBuffer(&bd, NULL, &g_pIndexBuffer);
+if (FAILED(hr)) return fatalError("Create Index Buffer Error");
+
+g_pIndexBuffer->Map(D3D10_MAP_WRITE_DISCARD , 0 , (void**) &i);
+.
+.
+.
+.
+g_pIndexBuffer->Unmap();
+
+UINT offset = 0;
+	g_pD3DDevice->IASetIndexBuffer(g_pIndexBuffer , DXGI_FORMAT_R32_UINT , offset);
+
+```
+
+
+##### output:
+
+![Vertex Index Cube](.//img//vertexindexcube.PNG)
