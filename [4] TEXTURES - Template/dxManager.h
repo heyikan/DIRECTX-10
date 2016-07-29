@@ -11,11 +11,10 @@
 #ifndef DXMANAGER
 #define DXMANAGER
 
-#include <windows.h>
-#include <d3d10.h>
-#include <d3dx10.h>
 
-#include <vector>
+
+
+#include "BtnCtrl.h"
 
 //create a basic vertex type
 struct vertex
@@ -38,7 +37,7 @@ struct vertex
 	}
 };
 
-class dxManager
+class dxManager:public BtnCtrl
 {
 	/*******************************************************************
 	* Members
@@ -107,6 +106,8 @@ public:
 	UINT numOfVertices;
 
 	HRESULT createRectangle();
+	HRESULT setMatrices();
+
 
 	bool texturesEnabled;
 	int textureIndex;
@@ -127,7 +128,7 @@ private:
 
 
 
-	HRESULT setMatrices();
+
 
 	//fatal error handler
 	HRESULT fatalError(const LPCSTR msg);

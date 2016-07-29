@@ -134,13 +134,29 @@ HRESULT dxManager::createSwapChainAndDevice()
 	//output window handle
 	swapChainDesc.OutputWindow = *w_hWnd;
 	swapChainDesc.Windowed = true;    
+	
+	// Open DEBUG MODE
+	UINT createDeviceFlags = 0;
+#ifdef _DEBUG
+	createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
+#endif
+
+
+	// Open Hardware Mode:
+
+	IDXGIFactory* pFactory = NULL;
+	IDXGIAdapter* pAdapter = NULL;
+	CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&pFactory);
+
+	pFactory->EnumAdapters(0, &pAdapter);
+
 
 	//Create the D3D device
 	//--------------------------------------------------------------
-	hr = D3D10CreateDeviceAndSwapChain(NULL,
+	hr = D3D10CreateDeviceAndSwapChain(pAdapter,
 		D3D10_DRIVER_TYPE_HARDWARE,
 		NULL,
-		0,
+		createDeviceFlags,
 		D3D10_SDK_VERSION,
 		&swapChainDesc,
 		&g_pSwapChain,
@@ -332,9 +348,12 @@ HRESULT dxManager::createRectangle()
 
 HRESULT	dxManager::setMatrices()
 {
-	D3DXVECTOR3 camera[3] = { D3DXVECTOR3(0.0f, 0.0f, -5.0f),
+	D3DXVECTOR3 camera[3] = { 
+		//D3DXVECTOR3(0.0f, 0.0f, -5.0f),
+		D3DXVECTOR3(getX(), getY(), getZ()),
 		D3DXVECTOR3(0.0f, 0.0f, 1.0f),
-		D3DXVECTOR3(0.0f, 1.0f, 0.0f) };
+		D3DXVECTOR3(0.0f, 1.0f, 0.0f) 
+	};
 	D3DXMatrixLookAtLH(&g_viewMatrix, &camera[0], &camera[1], &camera[2]);
 
 	D3DXMatrixPerspectiveFovLH(&g_projectionMatrix, (float)D3DX_PI * 0.5f, (float)viewPortWidth / (float)viewPortHeight, 0.1f, 100.0f);
@@ -373,6 +392,12 @@ void dxManager::swapTexture()
 *******************************************************************/
 void dxManager::renderScene()
 {
+
+	if (buttonListener())
+		setMatrices();
+
+
+
 	//clear scene
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
 	g_pD3DDevice->ClearRenderTargetView(g_pRenderTargetView, ClearColor);

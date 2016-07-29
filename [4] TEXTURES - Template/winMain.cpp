@@ -59,22 +59,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CHAR:	switch (wParam)
-	{
-	case 't':	{
+		{
 
-					if (dx.texturesEnabled) dx.disableTextures();
-					else dx.enableTextures();
+		case 't':	{
 
-					dx.texturesEnabled = !dx.texturesEnabled;
-	}
-						break;
-	case 's':	{
-					dx.swapTexture();
-					//dx.createRectangle();
-	}
-						break;
-	}
+						if (dx.texturesEnabled) dx.disableTextures();
+						else dx.enableTextures();
+
+						dx.texturesEnabled = !dx.texturesEnabled;
+					}
 					break;
+
+		case 's':	{
+						dx.swapTexture();
+					}
+					break;
+
+		//case 'x':	{
+		//				dx.increaseX();
+		//				dx.setMatrices();
+		//}
+		//			break;
+
+		//case 'y':	{
+		//				dx.increaseY();
+		//				dx.setMatrices();
+		//}
+		//			break;
+
+		//case 'z':	{
+		//				dx.increaseZ();
+		//				dx.setMatrices();
+		//}
+					break;
+		}
+	break;
 
 					// Allow the user to press the escape key to end the application
 	case WM_KEYDOWN:	switch (wParam)

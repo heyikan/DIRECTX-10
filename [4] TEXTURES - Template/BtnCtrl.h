@@ -1,6 +1,11 @@
 #ifndef _BTNCTRL
 #define _BTNCTRL
 
+#include <windows.h>
+#include <d3d10.h>
+#include <d3dx10.h>
+
+#include <vector>
 
 
 class BtnCtrl
@@ -23,6 +28,8 @@ public:
 	float getX(){ return X; }
 	float getY(){ return Y; }
 	float getZ(){ return Z; }
+
+	bool buttonListener();
 
 private:
 
