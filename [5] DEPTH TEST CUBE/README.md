@@ -175,13 +175,16 @@ for( UINT p = 0; p < techDesc.Passes; p++ )
 ```c
 
 
-	// create index buffer
+// create index buffer
 	D3D10_BUFFER_DESC bd;
-	bd.ByteWidth = sizeof(vertex)* numOfVertices;
-	bd.Usage = D3D10_USAGE_DYNAMIC;
+	//change buffer desc bytewidth to index type and set bind type to index buffer
+	bd.ByteWidth = sizeof(unsigned int)* numOfVertices;
 	bd.BindFlags = D3D10_BIND_INDEX_BUFFER;
+
+	bd.Usage = D3D10_USAGE_DYNAMIC;
 	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
 	bd.MiscFlags = 0;
+
 
   hr = g_pD3DDevice->CreateBuffer(&bd, NULL, &g_pIndexBuffer);
 if (FAILED(hr)) return fatalError("Create Index Buffer Error");
@@ -198,6 +201,7 @@ UINT offset = 0;
 
 ```
 
+* We still use the createBuffer method to create the index buffer, we just change the bytewidth since the buffer stores 32bit **unsigned ints.** Once the buffer is created we bind it to the Input Assembly by calling the **IASetIndexBuffer** method ( all we need to specify is a pointer to the buffer, the format of the indexes, and the offset, in case we wish to use only a set portion of the buffer ).
 
 ##### output:
 
