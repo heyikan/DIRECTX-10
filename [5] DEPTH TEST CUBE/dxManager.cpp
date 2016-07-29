@@ -392,39 +392,52 @@ HRESULT dxManager::initVertexBuffer()
 	// init vertices
 	vertex* v = NULL;
 
+	//lock vertex buffer for CPU use
+	g_pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (void**)&v);
+
+	//vertices for a cube
+	v[0] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 0, 0, 1)); //front top left
+	v[1] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 1, 0, 1)); //front top right
+	v[2] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(0, 0, 1, 1)); //front bottom left
+	v[3] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(1, 1, 0, 1)); //front bottom right
+	v[4] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(1, 0, 0, 1)); //back top left
+	v[5] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(0, 1, 0, 1)); //back top right
+	v[6] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(0, 0, 1, 1)); //back bottom left
+	v[7] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(1, 1, 0, 1)); //back bottom right
+
+	g_pVertexBuffer->Unmap();
 
 	//lock vertex buffer for CPU use
 
-	//CUBE DRAW METHOD 1
-	//VERTEX VALUES NOT 100% CORRECT - TOO LAZY TO CORRECT
-	g_pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (void**)&v);
-	//vertices for a cube
-	v[0] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(1, 0, 0, 1));
-	v[1] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(0, 1, 0, 1));
-	v[2] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 0, 1, 1));
-	v[3] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(1, 1, 0, 1));
-	v[4] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(1, 0, 0, 1));
-	v[5] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 1, 0, 1));
-	v[6] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1));
-	v[7] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1));
-	v[8] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1));
-	v[9] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(0, 1, 0, 1));
-	v[10] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(0, 0, 1, 1));
-	v[11] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 1, 0, 1));
-	v[12] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1));
-	v[13] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(0, 1, 0, 1));
-	v[14] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1));
-	v[15] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1));
-	v[16] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1));
-	v[17] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(0, 1, 0, 1));
-	v[18] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1));
-	v[19] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(1, 1, 0, 1));
-	v[20] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 0, 0, 1));
-	v[21] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(0, 1, 0, 1));
-	v[22] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 0, 1, 1));
-	v[23] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1));
-	
-	g_pVertexBuffer->Unmap();
+	////CUBE DRAW METHOD 1
+	////VERTEX VALUES NOT 100% CORRECT - TOO LAZY TO CORRECT
+	//g_pVertexBuffer->Map(D3D10_MAP_WRITE_DISCARD, 0, (void**)&v);
+	////vertices for a cube
+	//v[0] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(1, 0, 0, 1));
+	//v[1] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(0, 1, 0, 1));
+	//v[2] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 0, 1, 1));
+	//v[3] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(1, 1, 0, 1));
+	//v[4] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(1, 0, 0, 1));
+	//v[5] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 1, 0, 1));
+	//v[6] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1));
+	//v[7] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1));
+	//v[8] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1));
+	//v[9] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(0, 1, 0, 1));
+	//v[10] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(0, 0, 1, 1));
+	//v[11] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 1, 0, 1));
+	//v[12] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1));
+	//v[13] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(0, 1, 0, 1));
+	//v[14] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1));
+	//v[15] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1));
+	//v[16] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1));
+	//v[17] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(0, 1, 0, 1));
+	//v[18] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1));
+	//v[19] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(1, 1, 0, 1));
+	//v[20] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 0, 0, 1));
+	//v[21] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(0, 1, 0, 1));
+	//v[22] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 0, 1, 1));
+	//v[23] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1));
+
 
 	g_pD3DDevice->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	
@@ -434,6 +447,70 @@ HRESULT dxManager::initVertexBuffer()
 
 HRESULT dxManager::initIndexBuffer()
 {
+
+
+	// create index buffer
+	D3D10_BUFFER_DESC bd;
+	bd.ByteWidth = sizeof(vertex)* numOfVertices;
+	bd.Usage = D3D10_USAGE_DYNAMIC;
+	bd.BindFlags = D3D10_BIND_INDEX_BUFFER;
+	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+	bd.MiscFlags = 0;
+
+	hr = g_pD3DDevice->CreateBuffer(&bd, NULL, &g_pIndexBuffer);
+	if (FAILED(hr)) return fatalError("Create Index Buffer Error");
+ 
+	// create indexes for a cube
+	unsigned int* i = NULL;
+
+	g_pIndexBuffer->Map(D3D10_MAP_WRITE_DISCARD , 0 , (void**) &i);
+
+	//front face
+	i[0] = 2;
+	i[1] = 0;
+	i[2] = 3;
+	i[3] = 1;
+	i[4] = 0xffffffff; //start new strip
+
+	//right face
+	i[5] = 3;
+	i[6] = 1;
+	i[7] = 7;
+	i[8] = 5;
+	i[9] = 0xffffffff;
+
+	//left face
+	i[10] = 6;
+	i[11] = 4;
+	i[12] = 2;
+	i[13] = 0;
+	i[14] = 0xffffffff;
+
+	//back face
+	i[15] = 7;
+	i[16] = 5;
+	i[17] = 6;
+	i[18] = 4;
+	i[19] = 0xffffffff;
+
+	//top face
+	i[20] = 0;
+	i[21] = 4;
+	i[22] = 1;
+	i[23] = 5;
+	i[24] = 0xffffffff;
+
+	//bottom face
+	i[25] = 6;
+	i[26] = 2;
+	i[27] = 7;
+	i[28] = 3;
+
+	g_pIndexBuffer->Unmap();
+
+	UINT offset = 0;
+	g_pD3DDevice->IASetIndexBuffer(g_pIndexBuffer , DXGI_FORMAT_R32_UINT , offset);
+
 	return S_OK;
 }
 
@@ -509,12 +586,15 @@ void dxManager::renderScene()
 		//draw rectangle
 		//g_pD3DDevice->Draw(numOfVertices, 0);
 
-		g_pD3DDevice->Draw(4, 0);
-		g_pD3DDevice->Draw(4, 4);
-		g_pD3DDevice->Draw(4, 8);
-		g_pD3DDevice->Draw(4, 12);
-		g_pD3DDevice->Draw(4, 16);
-		g_pD3DDevice->Draw(4, 20);
+		// draws just vertex buffers 
+		//g_pD3DDevice->Draw(4, 0);
+		//g_pD3DDevice->Draw(4, 4);
+		//g_pD3DDevice->Draw(4, 8);
+		//g_pD3DDevice->Draw(4, 12);
+		//g_pD3DDevice->Draw(4, 16);
+		//g_pD3DDevice->Draw(4, 20);
+
+		g_pD3DDevice->DrawIndexed(29,0,0);
 	}
 
 	//flip buffers

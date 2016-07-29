@@ -56,6 +56,8 @@ private:
 
 	//input layout and vertex buffer
 	ID3D10Buffer*				g_pVertexBuffer;
+	ID3D10Buffer*				g_pIndexBuffer;
+
 	ID3D10InputLayout*			g_pVertexLayout;
 
 	//effects and techniques
