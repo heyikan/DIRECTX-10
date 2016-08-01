@@ -97,3 +97,62 @@ D3DXMatrixRotationAxis(&rollMatrix, look, roll);
 D3DXVec3TransformCoord(&m_right, &m_right, &rollMatrix);
 D3DXVec3TransformCoord(&m_up, &m_up, &rollMatrix);
 ```
+
+## Filling the view matrix
+
+* Once we have created our rotation matrices and applied them to our axis vectors we are ready to fill in the view matrix. As well as rotation we need to fill in the position of the camera.
+
+```c
+D3DXMATRIX viewMatrix;
+D3DXMatrixIdentity(&viewMatrix)
+```
+
+```c
+viewMatrix._11 = right.x; viewMatrix._12 = up.x; viewMatrix._13 = look.x;
+viewMatrix._21 = right.y; viewMatrix._22 = up.y; viewMatrix._23 = look.y;
+viewMatrix._31 = right.z; viewMatrix._32 = up.z; viewMatrix._33 = look.z;
+
+viewMatrix._41 = - D3DXVec3Dot( &position, &right );
+viewMatrix._42 = - D3DXVec3Dot( &position, &up );
+viewMatrix._43 = - D3DXVec3Dot( &position, &look );
+```
+
+* This can be difficult to visualise so try drawing these things or even better try creating some axis out of paper and manually seeing how these rotations work.
+
+* Finally we have to actually set the view matrix:
+
+```c
+gD3dDevice->SetTransform( D3DTS_VIEW, &viewMatrix );
+```
+
+## Camera rotation
+
+* To rotate our camera we can now simply provide functions in our camera to add to our rotation variables e.g.
+
+```c
+void Yaw(float amount)
+{
+   yaw+=amount;
+}
+```
+
+* Since with the described method I am storing accumulated angles you may also want to check for the angle going over 360 degrees (2*PI radians) or below 0.
+
+## Camera movement
+
+* With the above system we always have up, right and look vectors and position stored as member variables of the class. This makes it very easy to move the camera in the correct direction e.g.
+
+```c
+position+=look*movementAmount;    // Move forward
+position+=look*-movementAmount;    // Move backward
+position+=right*movementAmount;   // Move right (strafe)
+position+=right*-movementAmount;   // Move left
+position+=up*movementAmount;      // Move up
+position+=up*-movementAmount;      // Move down
+```
+
+Where __movementAmount__ is a floating point scalar value determining how far we should move.
+
+__Note:__  if you implemented your camera without holding the camera axis you could use the view matrix instead e.g. to move forward you would add to the position the result of multiplying the view matrix and a vector 0,0,z,0, where z is the speed to move.
+
+#### see also: [toymaker.info](http://www.toymaker.info/Games/html/camera.html)
