@@ -57,3 +57,5 @@ ppSprite->End();
 ```
 
 ![buffer problem solved](.//img//fontwithbuffer.png)
+
+![Font Final](.//img//fontfinal.png)
