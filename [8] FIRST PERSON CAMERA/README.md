@@ -2,7 +2,7 @@
 DirectX 10 Examples Firs Person Camera
 
 ### Output
-![FPS](.//img//fpsCam.PNG)
+![FPS](.//img//fpsCam.png)
 
 
 See Also: [braynzarsoft.net](http://www.braynzarsoft.net/viewtutorial/q16390-18-first-person-camera)
