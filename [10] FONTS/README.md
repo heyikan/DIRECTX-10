@@ -7,6 +7,8 @@ LPD3DX10SPRITE			ppSprite;
 
 ![font buffer problem](.//img//fontbufferproblem.png)
 
+* __You will notice we have re-set our depth/stencil state, input layout, and topology. We need to do this because a call to the ID3DX10Font::DrawText() function changes all that. Not only does it change that, it changes the geometry shader in the effect file, so we need to remember to reset the geometry shader too, which we will do soon.__
+
 * to solve problem save depthstencilstate before drawing text.
 ```c
 ID3D10DepthStencilState* dss; UINT foo = 1; g_pD3DDevice->OMGetDepthStencilState(&dss, &foo);
