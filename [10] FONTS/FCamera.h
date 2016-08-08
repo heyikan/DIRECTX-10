@@ -12,7 +12,7 @@ public:
 	fcamera();
 	//~fcamera();
 
-	void UpdateCamera(D3DXMATRIX &View);
+	void UpdateCamera();
 
 	HRESULT InitDirectInput(HINSTANCE* , HWND*);
 
@@ -24,6 +24,7 @@ public:
 
 	float moveLeftRight;
 	float moveBackForward;
+	float moveUpDown;
 
 
 	float buttonSensitivity;
@@ -47,7 +48,7 @@ public:
 
 	float heading = 0.0f;
 
-	bool buttonListener(D3DXMATRIX &View);
+	bool buttonListener();
 
 private:
 

@@ -16,6 +16,7 @@ fcamera::fcamera()
 
 	moveLeftRight = 0.0f;
 	moveBackForward = 0.0f;
+	moveUpDown = 0.0f;
 
 	moveX = 0; 
 	moveZ = 0;
@@ -24,7 +25,7 @@ fcamera::fcamera()
 	mouseSensitivity = 0.005f;
 }
 
-void fcamera::UpdateCamera(D3DXMATRIX &View)
+void fcamera::UpdateCamera()
 {
 	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, yaw, pitch, 0);
 	D3DXVec3TransformCoord(&Target, &DefaultForward, &rotationMatrix);
@@ -39,9 +40,11 @@ void fcamera::UpdateCamera(D3DXMATRIX &View)
 
 	Position += moveLeftRight*Right;
 	Position += moveBackForward*Forward;
+	Position += moveUpDown*Up;
 
 	moveLeftRight = 0.0f;
 	moveBackForward = 0.0f;
+	moveUpDown = 0.0f;
 
 	Target = Position + Target;
 	
@@ -91,7 +94,7 @@ HRESULT fcamera::fatalError(const LPCSTR msg)
 }
 
 
-bool fcamera::buttonListener(D3DXMATRIX &View)
+bool fcamera::buttonListener()
 {
 
 	bool key = false;
@@ -132,6 +135,23 @@ bool fcamera::buttonListener(D3DXMATRIX &View)
 		moveBackForward -= buttonSensitivity;
 		key = true;
 	}
+
+	if (keyboardState[DIK_LCONTROL] & 0x80)
+	{
+		moveUpDown -= buttonSensitivity;
+		key = true;
+	}
+
+	if (keyboardState[DIK_SPACE] & 0x80)
+	{
+		moveUpDown += buttonSensitivity;
+		key = true;
+	}
+	//if (keyboardState[DIK_S] & 0x80)
+	//{
+	//	moveBackForward -= buttonSensitivity;
+	//	key = true;
+	//}
 	if ((mouseCurrState.lX != mouseLastState.lX) || (mouseCurrState.lY != mouseLastState.lY))
 	{
 		yaw += mouseLastState.lX * 0.001f;
@@ -141,11 +161,11 @@ bool fcamera::buttonListener(D3DXMATRIX &View)
 		mouseLastState = mouseCurrState;
 		key = true;
 	}
-
+	
 
 
 	if (key){
-		UpdateCamera(View);
+		UpdateCamera();
 		
 	}
 

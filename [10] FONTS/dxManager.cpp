@@ -74,15 +74,17 @@ bool dxManager::initialize( HWND* hW , HINSTANCE* hIns)
 	if (FAILED((Cam.InitDirectInput(w_hIns , w_hWnd))))
 		return false;
 
-	// CREATE FONT
-	if (FAILED(createFont()))
-		return false;
+
 
 	// CREATE DEVICE
 	//*****************************************************************************
 	if (FAILED(createSwapChainAndDevice()))
 		return false;
 
+
+	// CREATE FONT
+	if (FAILED(createFont()))
+		return false;
 
 
 	// INPUT ASSEMBLY STAGE
@@ -136,7 +138,7 @@ bool dxManager::initialize( HWND* hW , HINSTANCE* hIns)
 HRESULT dxManager::createFont()
 {
 	D3DX10_FONT_DESC fd;
-	fd.Height = 20;
+	fd.Height = 17;
 	fd.Width= 0;
 	fd.Weight = 0;
 	fd.MipLevels = 1;
@@ -455,40 +457,40 @@ HRESULT dxManager::createMeshCube()
 	v = new vertex[24];
 
 	// Top
-	v[0] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
-	v[1] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
-	v[2] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(1.0f, 1.0f));
-	v[3] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[0] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
+	v[1] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 1.0f));
+	v[2] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[3] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
 
 	// Bottom
-	v[4] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
-	v[5] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
-	v[6] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(1.0f, 1.0f));
-	v[7] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[4] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
+	v[5] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 1.0f));
+	v[6] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[7] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
 
 	// Left
-	v[8] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
-	v[9] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
-	v[10] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(1.0f, 1.0f));
-	v[11] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[8] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(1.0f, 1.0f));
+	v[9] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[10] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(0.0f, 0.0f));
+	v[11] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
 
 	// Right
-	v[12] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
-	v[13] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
-	v[14] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(1.0f, 1.0f));
-	v[15] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[12] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(1.0f, 1.0f));
+	v[13] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[14] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(0.0f, 0.0f));
+	v[15] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
 
 	// Front Face
-	v[16] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
-	v[17] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
-	v[18] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(1.0f, 1.0f));
-	v[19] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[16] = vertex(D3DXVECTOR3(-1, -1, -1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(1.0f, 1.0f));
+	v[17] = vertex(D3DXVECTOR3(1, -1, -1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[18] = vertex(D3DXVECTOR3(1, 1, -1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(0.0f, 0.0f));
+	v[19] = vertex(D3DXVECTOR3(-1, 1, -1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
 
 	// Back Face
-	v[20] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(0.0f, 0.0f));
-	v[21] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
-	v[22] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(1.0f, 1.0f));
-	v[23] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[20] = vertex(D3DXVECTOR3(-1, -1, 1), D3DXVECTOR4(1, 0, 0, 1), D3DXVECTOR2(1.0f, 1.0f));
+	v[21] = vertex(D3DXVECTOR3(1, -1, 1), D3DXVECTOR4(0, 1, 0, 1), D3DXVECTOR2(0.0f, 1.0f));
+	v[22] = vertex(D3DXVECTOR3(1, 1, 1), D3DXVECTOR4(0, 0, 1, 1), D3DXVECTOR2(0.0f, 0.0f));
+	v[23] = vertex(D3DXVECTOR3(-1, 1, 1), D3DXVECTOR4(1, 1, 0, 1), D3DXVECTOR2(1.0f, 0.0f));
 
 
 	unsigned int i[36] = {
@@ -785,16 +787,14 @@ void dxManager::swapTexture()
 void dxManager::renderScene()
 {
 
-	D3DXCOLOR fontColor(1.0f, 0.0f, 0.0f, 1.0f);
-	RECT rectangle;
-	SetRectEmpty(&rectangle);
+
 
 	//if (gCamera.buttonListener()){
 	//	setMatrices();
 	//	gCamera.printCoordinate();
 	//}
 
-	if (Cam.buttonListener(g_viewMatrix))
+	if (Cam.buttonListener())
 		setMatrices();
 
 
@@ -839,21 +839,15 @@ void dxManager::renderScene()
 			{
 				//apply technique
 				g_pBasicTechnique->GetPassByIndex(p)->Apply(0);
-				
 				g_pMesh->DrawSubset(0);
 
 			}
 		}
 	}
 
-	ID3D10DepthStencilState* dss; UINT foo = 1; g_pD3DDevice->OMGetDepthStencilState(&dss, &foo);
+	drawDatasToScreen();
 
 
-	ppSprite->Begin(D3DX10_SPRITE_SAVE_STATE);
-	Font->DrawText(0, "Hello World!", -1, &rectangle, DT_NOCLIP, fontColor);
-	ppSprite->End();
-
-	g_pD3DDevice->OMSetDepthStencilState(dss, 1);
 
 	g_pSwapChain->Present(0, 0);
 
@@ -925,6 +919,36 @@ void dxManager::renderScene()
 	
 	//flip buffers
 	/*g_pSwapChain->Present(0, 0);*/
+}
+
+
+void dxManager::drawDatasToScreen()
+{
+	// save depth stencil state
+	ID3D10DepthStencilState* dss; UINT foo = 1; g_pD3DDevice->OMGetDepthStencilState(&dss, &foo);
+
+	D3DXCOLOR fontColor(1.0f, 1.0f, 0.0f, 1.0f);
+	RECT rectangle;
+	SetRectEmpty(&rectangle);
+
+	char  Targets[80], Position[80], Up[80];
+	sprintf(Targets, "X: %f Y: %f Z: %f \n", Cam.Target.x, Cam.Target.y, Cam.Target.z);
+	sprintf(Position, "X: %f Y: %f Z: %f \n", Cam.Position.x, Cam.Position.y, Cam.Position.z);
+	sprintf(Up, "X: %f Y: %f Z: %f \n", Cam.Up.x, Cam.Up.y, Cam.Up.z);
+
+
+	ppSprite->Begin(D3DX10_SPRITE_SAVE_STATE);
+	rectangle = { 5, 5, 0, 0 };
+	Font->DrawText(0, "---Targets---", -1, &rectangle, DT_NOCLIP, fontColor);	rectangle.top += 20;
+	Font->DrawText(0, Targets, -1, &rectangle, DT_NOCLIP, fontColor);			rectangle.top += 20;
+	Font->DrawText(0, "---Position---", -1, &rectangle, DT_NOCLIP, fontColor);	rectangle.top += 20;
+	Font->DrawText(0, Position, -1, &rectangle, DT_NOCLIP, fontColor);			rectangle.top += 20;
+	Font->DrawText(0, "---Up---", -1, &rectangle, DT_NOCLIP, fontColor);		rectangle.top += 20;
+	Font->DrawText(0, Up, -1, &rectangle, DT_NOCLIP, fontColor);				rectangle.top += 20;
+	ppSprite->End();
+
+	// load depth stencil state
+	g_pD3DDevice->OMSetDepthStencilState(dss, 1);
 }
 
 /*******************************************************************

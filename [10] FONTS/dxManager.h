@@ -151,6 +151,8 @@ private:
 
 
 
+	void drawDatasToScreen();
+
 
 	//fatal error handler
 	HRESULT fatalError(const LPCSTR msg);
