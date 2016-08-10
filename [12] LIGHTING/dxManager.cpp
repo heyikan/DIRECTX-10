@@ -119,7 +119,7 @@ bool dxManager::initialize( HWND* hW , HINSTANCE* hIns)
 	//if (FAILED(createCube()))
 	//	return false;
 
-
+	createLights();
 
 	if (FAILED(createMeshCube()))
 		return false;
@@ -464,6 +464,17 @@ HRESULT dxManager::createCube()
 
 }
 
+void dxManager::createLights()
+{
+	//D3DXVECTOR4 vLightPos = D3DXVECTOR4(0.0f, 0.0f, 21.0f, 1.0f);
+	vLightPos = D3DXVECTOR4(3.0f, 12.0f, 21.0f, 1.0f);
+	vLightColors = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
+
+	g_pLightPosVariable->SetFloatVectorArray((float*)vLightPos, 0, 2);
+	g_pLightColorVariable->SetFloatVectorArray((float*)vLightColors, 0, 2);
+
+
+}
 
  HRESULT dxManager::createMeshCube()
 {
@@ -774,6 +785,14 @@ HRESULT	dxManager::setMatrices()
 	g_pViewMatrixEffectVariable->SetMatrix((float*)&g_viewMatrix);
 	g_pProjectionMatrixEffectVariable->SetMatrix((float*)&g_projectionMatrix);
 
+
+
+	D3DXMATRIX                  g_WorldInverseTranspose;
+
+	D3DXMatrixInverse(&g_WorldInverseTranspose, 0, &g_WorldMatrix);
+	D3DXMatrixTranspose(&g_WorldInverseTranspose, &g_WorldInverseTranspose);
+	g_pWorldInverseTransposeVariable->SetMatrix((float*)&g_WorldInverseTranspose);
+
 	//char  str[80];
 	//sprintf(str, "11: %f 12: %f 13: %f 14: %f \n", g_WorldMatrix._11, g_WorldMatrix._12, g_WorldMatrix._13, g_WorldMatrix._14);
 	//OutputDebugString(str);
@@ -844,19 +863,9 @@ void dxManager::renderScene(HRTimer* hTimer)
 	if (Cam.buttonListener())
 		setMatrices();
 
-	D3DXVECTOR4 vLightPos = D3DXVECTOR4(0.0f, 0.0f, 21.0f, 1.0f);
-	D3DXVECTOR4 vLightColors = D3DXVECTOR4(1.0f, 1.0f, 0.0f, 1.0f);
 
 
 
-	D3DXMATRIX                  g_WorldInverseTranspose;
-
-	D3DXMatrixInverse(&g_WorldInverseTranspose, 0, &g_WorldMatrix);
-	D3DXMatrixTranspose(&g_WorldInverseTranspose, &g_WorldInverseTranspose);
-	g_pWorldInverseTransposeVariable->SetMatrix((float*)&g_WorldInverseTranspose);
-
-	g_pLightPosVariable->SetFloatVectorArray((float*)vLightPos,0,2);
-	g_pLightColorVariable->SetFloatVectorArray((float*)vLightColors,0,2);
 
 	//clear scene
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; //red,green,blue,alpha
@@ -902,7 +911,7 @@ void dxManager::renderScene(HRTimer* hTimer)
 	D3DXMATRIX mLight;
 	D3DXMATRIX mLightScale;
 	D3DXMatrixTranslation(&mLight, vLightPos.x, vLightPos.y, vLightPos.z);
-	D3DXMatrixScaling(&mLightScale, 0.2f, 0.2f, 0.2f);
+	D3DXMatrixScaling(&mLightScale, 0.3f, 0.3f, 0.3f);
 	mLight = mLightScale * mLight;
 
 	// Update the world variable to reflect the current light

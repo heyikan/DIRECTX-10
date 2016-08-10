@@ -82,8 +82,8 @@ private:
 	ID3D10DepthStencilView*		g_pDepthStencilView;
 
 
-	
-
+	D3DXVECTOR4					vLightPos;
+	D3DXVECTOR4					vLightColors;
 
 	// technique
 	D3D10_TECHNIQUE_DESC		techDesc;
@@ -114,6 +114,8 @@ public:
 	void enableTextures();
 	void disableTextures();
 	void swapTexture();
+
+	void createLights();
 
 	//scene function
 	void renderScene(HRTimer* hTimer);	

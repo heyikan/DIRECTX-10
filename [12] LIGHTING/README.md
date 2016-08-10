@@ -1,3 +1,10 @@
+# DIRECTX 10 LIGHTING
+
+![FPS](.//img//lighting.png)
+
+basiceffects.fx
+
+```c
 //--------------------------------------------------------------------------------------
 // basicEffect.fx
 //
@@ -39,7 +46,7 @@ struct VS_INPUT
 	float4 Pos : POSITION;
 	float4 Color : COLOR;
 	float2 Tex : TEXCOORD;
-	
+
 	// light Normal
 	float3 Norm : NORMAL;
 };
@@ -61,7 +68,7 @@ struct VS_OUTPUT
 VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
-	
+
 	output.Pos = mul( input.Pos, World );
     output.Pos = mul( output.Pos, View );    
     output.Pos = mul( output.Pos, Projection );
@@ -73,7 +80,7 @@ VS_OUTPUT VS(VS_INPUT input)
 	output.Norm = mul(input.Norm, World);
 
 	output.Tex = input.Tex;
-	
+
     return output;  
 }
 
@@ -108,12 +115,12 @@ float4 texturedPS(VS_OUTPUT input) : SV_Target
 	float4 OUT = (float4)0;
 	texColor = tex2D.Sample(linearSampler, input.Tex);
 	//OUT = tex2D.Sample(linearSampler, input.Tex);
-	 
+
 	OUT = finalColor * texColor;
 
 	//OUT.rgba = finalColor;
 
-    //return tex2D.Sample( linearSampler, input.Tex ); 
+    //return tex2D.Sample( linearSampler, input.Tex );
 	//OUT = tex2D.Sample(linearSampler, input.Tex);
 	//return finalColor;
 	//return tex2D.Sample(linearSampler, input.Tex);
@@ -136,14 +143,14 @@ float4 PS(VS_OUTPUT input) : SV_Target
 
 	finalColor.a = 1;
 
-	   //return tex2D.Sample( linearSampler, input.Tex ); 
+	   //return tex2D.Sample( linearSampler, input.Tex );
 
 	return finalColor;
 }
 
 float4 noTexture(VS_OUTPUT input) : SV_Target
 {
-    return input.Color; 
+    return input.Color;
 }
 
 //--------------------------------------------------------------------------------------
@@ -165,7 +172,7 @@ technique10 full
         SetGeometryShader( NULL );
 		SetPixelShader(CompileShader(ps_4_0, texturedPS()));
 		SetRasterizerState(DisableCulling);
-		
+
     }
 }
 
@@ -199,3 +206,4 @@ technique10 RenderLight
 		SetPixelShader(CompileShader(ps_4_0, PS()));
 	}
 }
+```

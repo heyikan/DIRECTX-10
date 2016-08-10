@@ -153,7 +153,7 @@ HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow, HWND& hWnd)
 
 	//create the window from the class defined above	
 	hWnd = CreateWindow("DXTutorial",
-		"Hakan Kaya's DirectX 10 Tutorial 11 - FPS",
+		"Hakan Kaya's DirectX 10 Tutorial 12 - LIGHTING",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		1000,
 		300,
